@@ -881,16 +881,17 @@ const ContemporaryScroll = () => {
 
   return (
     <div ref={containerRef} className={`transition-colors duration-1000 ${contentData[currentSessionIndex].color} min-h-screen text-white font-sans`}>
-      <div className="flex flex-col md:flex-row relative w-full">
+      <div className="flex flex-col md:flex-row relative w-full items-start">
         
         {/* SISI KIRI: STICKY */}
-        {/* Perubahan: h-[50vh] di mobile untuk memberi ruang deskripsi di bawahnya */}
+        {/* Perbaikan Mobile: Tinggi dikurangi jadi 50vh agar desc kanan naik */}
         <div className="w-full md:w-1/2 h-[50vh] md:h-screen sticky top-0 flex flex-col items-center justify-center p-4 md:p-12 z-20 overflow-hidden select-none">
           <h1 ref={bgTextRef} className="absolute text-[18vw] font-black opacity-10 pointer-events-none uppercase select-none">
             {contentData[currentSessionIndex].bgText}
           </h1>
 
-          <svg width="400" height="300" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet" style={{ position: 'absolute', left: 0, top: '15%', opacity: currentSessionIndex === 0 ? 0.6 : 0, transition: 'opacity 0.5s', pointerEvents: 'none' }}>
+          {/* Perbaikan Mobile: Ukuran SVG diperkecil via transform & width */}
+          <svg className="w-[300px] md:w-[400px] h-auto" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet" style={{ position: 'absolute', left: 0, top: '15%', opacity: currentSessionIndex === 0 ? 0.6 : 0, transition: 'opacity 0.5s', pointerEvents: 'none' }}>
             <path id="path1" d="M -50 100 Q 100 0 200 100 T 450 50" fill="none" stroke="white" strokeWidth="1"/>
             <image href={nadaGImg} className="note-1" width="30" height="30" />
             <image href={nadaiimg} className="note-a" width="30" height="30" />
@@ -902,14 +903,14 @@ const ContemporaryScroll = () => {
             <image href={nadaitripleimg} className="note-c" width="30" height="30" />
           </svg>
 
-          {/* Perubahan: max-w-[200px] di mobile agar gambar tidak terlalu besar */}
-          <div ref={mainImageRef} className="relative z-10 w-full max-w-[200px] md:max-w-[420px] aspect-square rounded-[20px] md:rounded-[30px] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.4)] mb-4 md:mb-8 border-2 border-white/20">
+          {/* Perbaikan Mobile: Gambar Utama diperkecil (max-w-[180px]) */}
+          <div ref={mainImageRef} className="relative z-10 w-full max-w-[180px] md:max-w-[420px] aspect-square rounded-[20px] md:rounded-[30px] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.4)] mb-4 md:mb-8 border-2 border-white/20">
             <img src={contentData[currentSessionIndex].image} className="w-full h-full object-cover" alt="Visual" />
           </div>
 
           <div className={`w-full max-w-[280px] md:max-w-[420px] transition-all duration-500 z-10 ${contentData[currentSessionIndex].hasMusicPlayer ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-            {/* Perubahan: mb-6 di mobile agar lebih rapat */}
-            <div className="w-full h-[4px] bg-white/20 relative mb-6 md:mb-10 cursor-pointer rounded-full" onMouseDown={handleMouseDown}>
+            {/* Perbaikan Mobile: Jarak Progress bar dikurangi */}
+            <div className="w-full h-[3px] md:h-[4px] bg-white/20 relative mb-6 md:mb-10 cursor-pointer rounded-full" onMouseDown={handleMouseDown}>
               <div className="absolute left-0 top-0 h-full bg-white rounded-full" style={{ width: `${progress}%` }} />
               <img 
                 src={bintangImg} 
@@ -925,14 +926,14 @@ const ContemporaryScroll = () => {
               />
             </div>
             
-            {/* Perubahan: gap-6 di mobile */}
+            {/* Perbaikan Mobile: Icon Player diperkecil */}
             <div className="flex items-center justify-center gap-6 md:gap-8">
               <img src={forwardIcon} onClick={handlePrev} className="w-8 md:w-12 cursor-pointer rotate-180 opacity-80 hover:opacity-100" alt="Prev" />
               <img src={isPlaying ? pauseIcon : playIcon} onClick={togglePlay} className="w-12 md:w-20 cursor-pointer hover:scale-110" alt="Play" />
               <img src={forwardIcon} onClick={handleNext} className="w-8 md:w-12 cursor-pointer opacity-80 hover:opacity-100" alt="Next" />
             </div>
 
-            {/* Perubahan: mt-4 di mobile dan font size lebih kecil */}
+            {/* Perbaikan Mobile: Text lagu diperkecil sedikit */}
             <div className="text-center mt-4 md:mt-6 select-none">
               <p className="text-base md:text-xl font-bold truncate">{contentData[currentSessionIndex].playlist[currentTrackIndex]?.title || "No Track"}</p>
               <p className="text-[10px] md:text-sm opacity-60 uppercase tracking-widest">{contentData[currentSessionIndex].playlist[currentTrackIndex]?.artist || ""}</p>
@@ -943,23 +944,21 @@ const ContemporaryScroll = () => {
         {/* SISI KANAN: SCROLLABLE CONTENT */}
         <div className="w-full md:w-1/2 relative z-10">
           {contentData.map((item, index) => (
-            /* Perubahan: py-12 di mobile agar konten naik ke area pandang */
-            <section key={index} className="content-section min-h-screen flex flex-col justify-center px-8 md:px-20 py-12 md:py-24">
+            /* Perbaikan Mobile: Padding dikurangi agar teks deskripsi langsung terlihat */
+            <section key={index} className="content-section min-h-[50vh] md:min-h-screen flex flex-col justify-center px-6 md:px-20 py-12 md:py-24">
               <span className="uppercase tracking-[4px] text-[10px] md:text-xs font-bold mb-2 md:mb-4 opacity-70 block">{item.subtitle}</span>
-              {/* Perubahan: gap-2 di mobile agar judul & icon tidak makan tempat vertikal */}
-              <div className="flex flex-wrap items-center gap-2 md:gap-4 mb-4 md:mb-8">
+              <div className="flex flex-wrap items-center gap-3 md:gap-4 mb-4 md:mb-8">
                 {item.name === "Hipdut" && <img src={nadaGImg} className="h-10 md:h-16" alt="clef" />}
                 <h2 className="text-4xl md:text-[5.5rem] font-black leading-none">{item.name}</h2>
                 {item.name === "Hipdut" && (
-                  <div ref={eyeContainerRef} className="relative w-14 h-14 md:w-28 md:h-28">
+                  <div ref={eyeContainerRef} className="relative w-16 h-16 md:w-28 md:h-28">
                     <img src={mataBaseImg} className="absolute inset-0 z-10 w-full" />
                     <img ref={pupilRef} src={pupilImg} className="absolute w-[70%] top-[15%] left-[15%] z-20" />
                   </div>
                 )}
               </div>
-              {/* Perubahan: mb-6 di mobile dan text-base */}
-              <p className="text-base md:text-xl leading-relaxed max-w-xl opacity-90 mb-6 md:mb-10 border-l-2 border-white/40 pl-4 md:pl-6">{item.desc}</p>
-              <button className="w-fit px-6 md:px-8 py-2 md:py-3 border border-white font-bold text-[10px] md:text-sm hover:bg-white hover:text-black transition-all uppercase tracking-widest">Pelajari Selengkapnya</button>
+              <p className="text-sm md:text-xl leading-relaxed max-w-xl opacity-90 mb-6 md:mb-10 border-l-2 border-white/40 pl-4 md:pl-6">{item.desc}</p>
+              <button className="w-fit px-6 py-2 md:px-8 md:py-3 border border-white font-bold text-[10px] md:text-sm hover:bg-white hover:text-black transition-all uppercase tracking-widest">Pelajari Selengkapnya</button>
             </section>
           ))}
         </div>
