@@ -692,19 +692,20 @@ import playIcon from "./assets/play.png";
 import pauseIcon from "./assets/pause.png";
 import forwardIcon from "./assets/forward.png";
 
-// Import Assets Notasi Musik (Sesuai Folder Anda)
+// Import Assets Notasi Musik
 import nadaGImg from "./assets/nada-g.png";        
 import nadaiimg from "./assets/nada-i.png";          
-import nadaidoubleimg from "./assets/nada-idouble1.png"; // Di folder Anda: nada-idouble1.png
-import nadaitripleimg from "./assets/nada-i-triple.png"; // Di folder Anda: nada-i-triple.png
-import quarterimg from "./assets/quareter.png";       // Di folder Anda typo: quareter.png
+import nadaidoubleimg from "./assets/nada-idouble1.png";
+import nadaitripleimg from "./assets/nada-i-triple.png";
+import quarterimg from "./assets/quareter.png";
 
-// Import Assets Audio (Sesuai Folder Anda)
+// Import Assets Audio
 import attachedAudio from "./assets/attached.mp3";
 import gamanMaduAudio from "./assets/garam-dan-madu.mp3";
 import kasihAbaAbaAudio from "./assets/kasih-aba-aba.mp3";
 import horegAudio from "./assets/horeg.mp3";
 import horeg2Audio from "./assets/horeg-pt2.mp3";
+
 gsap.registerPlugin(ScrollTrigger, MotionPathPlugin);
 
 const contentData = [
@@ -759,8 +760,9 @@ const ContemporaryScroll = () => {
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
   const [currentSessionIndex, setCurrentSessionIndex] = useState(0);
   const [progress, setProgress] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
 
-  // LOGIKA MATA (Hanya aktif di session Hipdut)
+  // LOGIKA MATA
   useEffect(() => {
     const handleMouseMove = (e) => {
       if (eyeContainerRef.current && pupilRef.current && currentSessionIndex === 0) {
@@ -774,11 +776,15 @@ const ContemporaryScroll = () => {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, [currentSessionIndex]);
 
-  // LOGIKA AUDIO PROGRESS
+  // LOGIKA AUDIO & AUTO PLAY
   useEffect(() => {
     const audio = audioRef.current;
-    const updateProgress = () => setProgress((audio.currentTime / audio.duration) * 100 || 0);
-    const handleEnded = () => handleNext(); // Pindah lagu otomatis
+    const updateProgress = () => {
+      if (!isDragging) {
+        setProgress((audio.currentTime / audio.duration) * 100 || 0);
+      }
+    };
+    const handleEnded = () => handleNext();
 
     audio.addEventListener('timeupdate', updateProgress);
     audio.addEventListener('ended', handleEnded);
@@ -787,11 +793,10 @@ const ContemporaryScroll = () => {
       audio.removeEventListener('timeupdate', updateProgress);
       audio.removeEventListener('ended', handleEnded);
     };
-  }, [currentTrackIndex, currentSessionIndex]);
+  }, [currentTrackIndex, currentSessionIndex, isDragging]);
 
   const togglePlay = () => { isPlaying ? audioRef.current.pause() : audioRef.current.play(); setIsPlaying(!isPlaying); };
 
-  // --- LOGIKA FORWARD & BACKWARD YANG DIPERBAIKI ---
   const handleNext = () => {
     const session = contentData[currentSessionIndex];
     if (session.hasMusicPlayer && session.playlist.length > 0) {
@@ -814,25 +819,23 @@ const ContemporaryScroll = () => {
     }
   };
 
-  const [isDragging, setIsDragging] = useState(false);
-
-  // Fungsi utama untuk menghitung posisi progres
+  // LOGIKA DRAG PROGRESS
   const calculateProgress = (clientX, targetElement) => {
     const rect = targetElement.getBoundingClientRect();
-    const x = Math.max(0, Math.min(clientX - rect.left, rect.width)); // Membatasi agar tidak keluar garis
-    const clickedProgress = x / rect.width;
-    audioRef.current.currentTime = clickedProgress * audioRef.current.duration;
+    const x = Math.max(0, Math.min(clientX - rect.left, rect.width));
+    const newProgress = x / rect.width;
+    if (audioRef.current.duration) {
+      audioRef.current.currentTime = newProgress * audioRef.current.duration;
+      setProgress(newProgress * 100);
+    }
   };
 
   const handleMouseDown = (e) => {
     setIsDragging(true);
-    const target = e.currentTarget; // Simpan referensi elemen bar
+    const target = e.currentTarget;
     calculateProgress(e.clientX, target);
 
-    const onMouseMove = (moveEvent) => {
-      calculateProgress(moveEvent.clientX, target);
-    };
-
+    const onMouseMove = (moveEvent) => calculateProgress(moveEvent.clientX, target);
     const onMouseUp = () => {
       setIsDragging(false);
       window.removeEventListener('mousemove', onMouseMove);
@@ -842,60 +845,15 @@ const ContemporaryScroll = () => {
     window.addEventListener('mousemove', onMouseMove);
     window.addEventListener('mouseup', onMouseUp);
   };
-  // ------------------------------------------------
 
   useGSAP(() => {
-    // Jalur Atas - Langsung Jalan
-gsap.to(".note-1", {
-  duration: 5,
-  repeat: -1,
-  ease: "none",
-  motionPath: { path: "#path1", align: "#path1", alignOrigin: [0.5, 0.5] }
-});
+    gsap.to(".note-1", { duration: 5, repeat: -1, ease: "none", motionPath: { path: "#path1", align: "#path1", alignOrigin: [0.5, 0.5] } });
+    gsap.to(".note-2", { duration: 5.2, repeat: -1, ease: "none", delay: 1.2, motionPath: { path: "#path2", align: "#path2", alignOrigin: [0.5, 0.5] } });
+    gsap.to(".note-3", { duration: 4.8, repeat: -1, ease: "none", delay: 2.5, motionPath: { path: "#path3", align: "#path3", alignOrigin: [0.5, 0.5] } });
+    gsap.to(".note-a", { duration: 4.8, repeat: -1, ease: "none", delay: 2, motionPath: { path: "#path1", align: "#path1", alignOrigin: [0.5, 0.5] } });
+    gsap.to(".note-b", { duration: 5.2, repeat: -1, ease: "none", delay: 2, motionPath: { path: "#path2", align: "#path2", alignOrigin: [0.5, 0.5] } });
+    gsap.to(".note-c", { duration: 4.5, repeat: -1, ease: "none", delay: 2, motionPath: { path: "#path3", align: "#path3", alignOrigin: [0.5, 0.5] } });
 
-// Jalur Tengah - Jeda 1.2 detik
-gsap.to(".note-2", {
-  duration: 5.2, // Sedikit lebih lambat agar ritme asik
-  repeat: -1,
-  ease: "none",
-  delay: 1.2,
-  motionPath: { path: "#path2", align: "#path2", alignOrigin: [0.5, 0.5] }
-});
-
-// Jalur Bawah - Jeda 2.5 detik
-gsap.to(".note-3", {
-  duration: 4.8, // Sedikit lebih cepat
-  repeat: -1,
-  ease: "none",
-  delay: 2.5,
-  motionPath: { path: "#path3", align: "#path3", alignOrigin: [0.5, 0.5] }
-});
-
-gsap.to(".note-a", {
-  duration: 4.8, // Sedikit lebih cepat
-  repeat: -1,
-  ease: "none",
-  delay: 2,
-  motionPath: { path: "#path1", align: "#path1", alignOrigin: [0.5, 0.5] }
-});
-
-gsap.to(".note-b", {
-  duration: 5.2, // Sedikit lebih cepat
-  repeat: -1,
-  ease: "none",
-  delay: 2,
-  motionPath: { path: "#path2", align: "#path2", alignOrigin: [0.5, 0.5] }
-});
-
-gsap.to(".note-c", {
-  duration: 4.5, // Sedikit lebih cepat
-  repeat: -1,
-  ease: "none",
-  delay: 2,
-  motionPath: { path: "#path3", align: "#path3", alignOrigin: [0.5, 0.5] }
-});
-
-    // FITUR STICKY & UPDATE KONTEN SAAT SCROLL
     const sections = gsap.utils.toArray('.content-section');
     sections.forEach((section, i) => {
       ScrollTrigger.create({
@@ -910,16 +868,12 @@ gsap.to(".note-c", {
     function updateContent(index) {
       setCurrentSessionIndex(index);
       setCurrentTrackIndex(0);
-      
-      // Update Audio Source
       const session = contentData[index];
       if (session.hasMusicPlayer && session.playlist.length > 0) {
         audioRef.current.src = session.playlist[0].url;
       }
       audioRef.current.pause();
       setIsPlaying(false);
-
-      // Animasi transisi gambar & teks background
       gsap.fromTo(mainImageRef.current, { scale: 0.9, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.5 });
       gsap.fromTo(bgTextRef.current, { y: 30, opacity: 0 }, { y: 0, opacity: 0.1, duration: 0.4 });
     }
@@ -927,104 +881,61 @@ gsap.to(".note-c", {
 
   return (
     <div ref={containerRef} className={`transition-colors duration-1000 ${contentData[currentSessionIndex].color} min-h-screen text-white font-sans`}>
-      
       <div className="flex flex-col md:flex-row relative w-full">
         
-        {/* SISI KIRI: STICKY (Berfungsi penuh di Desktop) */}
-        <div className="w-full md:w-1/2 h-[65vh] md:h-screen sticky top-0 flex flex-col items-center justify-center p-6 md:p-12 z-20 overflow-hidden">
-          
-          {/* BG TEXT DINAMIS */}
+        {/* SISI KIRI: STICKY */}
+        {/* Perubahan: h-[50vh] di mobile untuk memberi ruang deskripsi di bawahnya */}
+        <div className="w-full md:w-1/2 h-[50vh] md:h-screen sticky top-0 flex flex-col items-center justify-center p-4 md:p-12 z-20 overflow-hidden select-none">
           <h1 ref={bgTextRef} className="absolute text-[18vw] font-black opacity-10 pointer-events-none uppercase select-none">
             {contentData[currentSessionIndex].bgText}
           </h1>
 
-          <svg width="400" height="300" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet" style={{ position: 'absolute', left: 0, top: '15%', opacity: currentSessionIndex === 0 ? 0.6 : 0, transition: 'opacity', pointerEvents: 'none' }}>
-    
-    {/* Jalur 1 (Atas) */}
-    <path id="path1" d="M -50 100 Q 100 0 200 100 T 450 50" fill="none" stroke="white" strokeWidth="1"/>
-    {/* GANTI CIRCLE MENJADI IMAGE */}
-    <image href={nadaGImg} className="note-1" width="30" height="30" />
-    <image href={nadaiimg} className="note-a" width="30" height="30" />
+          <svg width="400" height="300" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet" style={{ position: 'absolute', left: 0, top: '15%', opacity: currentSessionIndex === 0 ? 0.6 : 0, transition: 'opacity 0.5s', pointerEvents: 'none' }}>
+            <path id="path1" d="M -50 100 Q 100 0 200 100 T 450 50" fill="none" stroke="white" strokeWidth="1"/>
+            <image href={nadaGImg} className="note-1" width="30" height="30" />
+            <image href={nadaiimg} className="note-a" width="30" height="30" />
+            <path id="path2" d="M -50 100 Q 100 0 200 100 T 450 50" transform="translate(0, 40)" fill="none" stroke="white" strokeWidth="1"/>
+            <image href={nadaidoubleimg} className="note-2" width="30" height="30" />
+            <image href={nadaitripleimg} className="note-b" width="30" height="30" />
+            <path id="path3" d="M -50 100 Q 100 0 200 100 T 450 50" transform="translate(0, 80)" fill="none" stroke="white" strokeWidth="1"/>
+            <image href={quarterimg} className="note-3" width="30" height="30" />
+            <image href={nadaitripleimg} className="note-c" width="30" height="30" />
+          </svg>
 
-    {/* Jalur 2 (Tengah) */}
-    <path id="path2" d="M -50 100 Q 100 0 200 100 T 450 50" transform="translate(0, 40)" fill="none" stroke="white" strokeWidth="1"/>
-    <image href={nadaidoubleimg} className="note-2" width="30" height="30" />
-    <image href={nadaitripleimg} className="note-b" width="30" height="30" />
-
-    {/* Jalur 3 (Bawah) */}
-    <path id="path3" d="M -50 100 Q 100 0 200 100 T 450 50" transform="translate(0, 80)" fill="none" stroke="white" strokeWidth="1"/>
-    <image href={quarterimg} className="note-3" width="30" height="30" />
-    <image href={nadaitripleimg} className="note-c" width="30" height="30" />
-</svg>
-
-          {/* GAMBAR UTAMA (BERUBAH OTOMATIS) */}
-          <div ref={mainImageRef} className="relative z-10 w-full max-w-[280px] md:max-w-[420px] aspect-square rounded-[30px] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.4)] mb-8 border-2 border-white/20">
-            <img 
-              src={contentData[currentSessionIndex].image} 
-              className="w-full h-full object-cover transition-all duration-500" 
-              alt="Visual" 
-            />
+          {/* Perubahan: max-w-[200px] di mobile agar gambar tidak terlalu besar */}
+          <div ref={mainImageRef} className="relative z-10 w-full max-w-[200px] md:max-w-[420px] aspect-square rounded-[20px] md:rounded-[30px] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.4)] mb-4 md:mb-8 border-2 border-white/20">
+            <img src={contentData[currentSessionIndex].image} className="w-full h-full object-cover" alt="Visual" />
           </div>
 
-          {/* PLAYER CONTROLS (Hanya muncul jika hasMusicPlayer: true) */}
-          <div className={`w-full max-w-[320px] md:max-w-[420px] transition-all duration-500 z-10 ${contentData[currentSessionIndex].hasMusicPlayer ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'}`}>
-            <div className="w-full h-[4px] bg-white/20 relative mb-10 cursor-pointer rounded-full">
-              <div 
-              className="w-full h-[4px] bg-white/20 relative mb-10 cursor-pointer rounded-full"
-              onMouseDown={handleMouseDown} >
-                <div 
-                className="absolute left-0 top-0 h-full bg-white rounded-full" 
-                style={{ width: `${progress}%` }} />
-                <img src={bintangImg} className="absolute top-1/2 w-10 h-10 -translate-y-1/2" 
-                style={{ left: `${progress}%`, 
-                         transform: 'translate(-50%, -50%)',
-                         filter: 'drop-shadow(2px 0 0 black) drop-shadow(-2px 0 0 black) drop-shadow(0 2px 0 black) drop-shadow(0 -2px 0 black)',
-                         pointerEvents: 'none',
-                         scale: isDragging ? '1.3' : '1', // Bintang membesar saat digeser
-                         transition: 'scale 0.2s'}} />
-               </div>
-
-            {/* Tombol Kontrol Navigasi */}
-            <div className="flex items-center justify-center gap-8">
+          <div className={`w-full max-w-[280px] md:max-w-[420px] transition-all duration-500 z-10 ${contentData[currentSessionIndex].hasMusicPlayer ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+            {/* Perubahan: mb-6 di mobile agar lebih rapat */}
+            <div className="w-full h-[4px] bg-white/20 relative mb-6 md:mb-10 cursor-pointer rounded-full" onMouseDown={handleMouseDown}>
+              <div className="absolute left-0 top-0 h-full bg-white rounded-full" style={{ width: `${progress}%` }} />
               <img 
-                src={forwardIcon} 
-                onClick={handlePrev} 
-                className="w-10 md:w-12 cursor-pointer rotate-180 opacity-80 hover:opacity-100 active:scale-90 transition-all" 
-                alt="Prev" 
+                src={bintangImg} 
+                className="absolute top-1/2 w-8 h-8 md:w-10 md:h-10 -translate-y-1/2" 
+                style={{ 
+                  left: `${progress}%`, 
+                  transform: 'translate(-50%, -50%)', 
+                  filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))',
+                  scale: isDragging ? '1.3' : '1',
+                  transition: 'scale 0.2s',
+                  pointerEvents: 'none'
+                }} 
               />
-              <img 
-                src={isPlaying ? pauseIcon : playIcon} 
-                onClick={togglePlay} 
-                className="w-16 md:w-20 cursor-pointer hover:scale-110 active:scale-95 transition-transform" 
-                alt="Play" 
-              />
-              <img 
-                src={forwardIcon} 
-                onClick={handleNext} 
-                className="w-10 md:w-12 cursor-pointer opacity-80 hover:opacity-100 active:scale-90 transition-all" 
-                alt="Next" 
-              />
+            </div>
+            
+            {/* Perubahan: gap-6 di mobile */}
+            <div className="flex items-center justify-center gap-6 md:gap-8">
+              <img src={forwardIcon} onClick={handlePrev} className="w-8 md:w-12 cursor-pointer rotate-180 opacity-80 hover:opacity-100" alt="Prev" />
+              <img src={isPlaying ? pauseIcon : playIcon} onClick={togglePlay} className="w-12 md:w-20 cursor-pointer hover:scale-110" alt="Play" />
+              <img src={forwardIcon} onClick={handleNext} className="w-8 md:w-12 cursor-pointer opacity-80 hover:opacity-100" alt="Next" />
             </div>
 
-            {/* Info Judul & Artist */}
-            <div className="text-center mt-6">
-              <p className="text-lg md:text-xl font-bold truncate">
-                {contentData[currentSessionIndex].playlist[currentTrackIndex]?.title || "No Track"}
-              </p>
-              <p className="text-sm opacity-60 uppercase tracking-widest">
-                {contentData[currentSessionIndex].playlist[currentTrackIndex]?.artist || ""}
-              </p>
-            </div>
-          </div> {/* <--- PENUTUP PLAYER CONTROLS */}
-        </div> {/* <--- PENUTUP SISI KIRI (STICKY) */}
-            <div className="flex items-center justify-center gap-8">
-              <img src={forwardIcon} onClick={handlePrev} className="w-10 md:w-12 cursor-pointer rotate-180 opacity-80 hover:opacity-100" alt="Prev" />
-              <img src={isPlaying ? pauseIcon : playIcon} onClick={togglePlay} className="w-16 md:w-20 cursor-pointer hover:scale-110 transition-transform" alt="Play" />
-              <img src={forwardIcon} onClick={handleNext} className="w-10 md:w-12 cursor-pointer opacity-80 hover:opacity-100" alt="Next" />
-            </div>
-            <div className="text-center mt-6">
-              <p className="text-lg md:text-xl font-bold truncate">{contentData[currentSessionIndex].playlist[currentTrackIndex]?.title || "No Track"}</p>
-              <p className="text-sm opacity-60 uppercase tracking-widest">{contentData[currentSessionIndex].playlist[currentTrackIndex]?.artist || ""}</p>
+            {/* Perubahan: mt-4 di mobile dan font size lebih kecil */}
+            <div className="text-center mt-4 md:mt-6 select-none">
+              <p className="text-base md:text-xl font-bold truncate">{contentData[currentSessionIndex].playlist[currentTrackIndex]?.title || "No Track"}</p>
+              <p className="text-[10px] md:text-sm opacity-60 uppercase tracking-widest">{contentData[currentSessionIndex].playlist[currentTrackIndex]?.artist || ""}</p>
             </div>
           </div>
         </div>
@@ -1032,28 +943,23 @@ gsap.to(".note-c", {
         {/* SISI KANAN: SCROLLABLE CONTENT */}
         <div className="w-full md:w-1/2 relative z-10">
           {contentData.map((item, index) => (
-            <section key={index} className="content-section min-h-screen flex flex-col justify-center px-8 md:px-20 py-24">
-              <span className="uppercase tracking-[4px] text-xs font-bold mb-4 opacity-70 block">{item.subtitle}</span>
-              
-              <div className="flex flex-wrap items-center gap-4 mb-8">
-                {item.name === "Hipdut" && <img src={nadaGImg} className="h-12 md:h-16" alt="clef" />}
-                <h2 className="text-5xl md:text-[5.5rem] font-black leading-none">{item.name}</h2>
-                
+            /* Perubahan: py-12 di mobile agar konten naik ke area pandang */
+            <section key={index} className="content-section min-h-screen flex flex-col justify-center px-8 md:px-20 py-12 md:py-24">
+              <span className="uppercase tracking-[4px] text-[10px] md:text-xs font-bold mb-2 md:mb-4 opacity-70 block">{item.subtitle}</span>
+              {/* Perubahan: gap-2 di mobile agar judul & icon tidak makan tempat vertikal */}
+              <div className="flex flex-wrap items-center gap-2 md:gap-4 mb-4 md:mb-8">
+                {item.name === "Hipdut" && <img src={nadaGImg} className="h-10 md:h-16" alt="clef" />}
+                <h2 className="text-4xl md:text-[5.5rem] font-black leading-none">{item.name}</h2>
                 {item.name === "Hipdut" && (
-                  <div ref={eyeContainerRef} className="relative w-20 h-20 md:w-28 md:h-28">
+                  <div ref={eyeContainerRef} className="relative w-14 h-14 md:w-28 md:h-28">
                     <img src={mataBaseImg} className="absolute inset-0 z-10 w-full" />
                     <img ref={pupilRef} src={pupilImg} className="absolute w-[70%] top-[15%] left-[15%] z-20" />
                   </div>
                 )}
               </div>
-
-              <p className="text-lg md:text-xl leading-relaxed max-w-xl opacity-90 mb-10 border-l-2 border-white/40 pl-6">
-                {item.desc}
-              </p>
-              
-              <button className="w-fit px-8 py-3 border border-white font-bold text-sm hover:bg-white hover:text-black transition-all uppercase tracking-widest">
-                Pelajari Selengkapnya
-              </button>
+              {/* Perubahan: mb-6 di mobile dan text-base */}
+              <p className="text-base md:text-xl leading-relaxed max-w-xl opacity-90 mb-6 md:mb-10 border-l-2 border-white/40 pl-4 md:pl-6">{item.desc}</p>
+              <button className="w-fit px-6 md:px-8 py-2 md:py-3 border border-white font-bold text-[10px] md:text-sm hover:bg-white hover:text-black transition-all uppercase tracking-widest">Pelajari Selengkapnya</button>
             </section>
           ))}
         </div>
