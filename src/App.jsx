@@ -814,12 +814,33 @@ const ContemporaryScroll = () => {
     }
   };
 
-  const handleProgressClick = (e) => {
-    if (!audioRef.current.duration) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - rect.left;
+  const [isDragging, setIsDragging] = useState(false);
+
+  // Fungsi utama untuk menghitung posisi progres
+  const calculateProgress = (clientX, targetElement) => {
+    const rect = targetElement.getBoundingClientRect();
+    const x = Math.max(0, Math.min(clientX - rect.left, rect.width)); // Membatasi agar tidak keluar garis
     const clickedProgress = x / rect.width;
     audioRef.current.currentTime = clickedProgress * audioRef.current.duration;
+  };
+
+  const handleMouseDown = (e) => {
+    setIsDragging(true);
+    const target = e.currentTarget; // Simpan referensi elemen bar
+    calculateProgress(e.clientX, target);
+
+    const onMouseMove = (moveEvent) => {
+      calculateProgress(moveEvent.clientX, target);
+    };
+
+    const onMouseUp = () => {
+      setIsDragging(false);
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
+    };
+
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onMouseUp);
   };
   // ------------------------------------------------
 
@@ -948,30 +969,20 @@ gsap.to(".note-c", {
           {/* PLAYER CONTROLS (Hanya muncul jika hasMusicPlayer: true) */}
           <div className={`w-full max-w-[320px] md:max-w-[420px] transition-all duration-500 z-10 ${contentData[currentSessionIndex].hasMusicPlayer ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'}`}>
             <div className="w-full h-[4px] bg-white/20 relative mb-10 cursor-pointer rounded-full">
-              {/* PLAYER CONTROLS & PROGRESS BAR */}
-          <div className={`w-full max-w-[320px] md:max-w-[420px] transition-all duration-500 z-10 ${contentData[currentSessionIndex].hasMusicPlayer ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'}`}>
-            
-            {/* Progress Bar Interaktif */}
-            <div 
-              className="w-full h-[4px] bg-white/20 relative mb-10 cursor-pointer rounded-full"
-              onClick={handleProgressClick}
-            >
               <div 
+              className="w-full h-[4px] bg-white/20 relative mb-10 cursor-pointer rounded-full"
+              onMouseDown={handleMouseDown} >
+                <div 
                 className="absolute left-0 top-0 h-full bg-white rounded-full" 
-                style={{ width: `${progress}%` }} 
-              />
-              <img 
-                src={bintangImg} 
-                className="absolute top-1/2 w-10 h-10 -translate-y-1/2" 
-                style={{ 
-                    left: `${progress}%`, 
-                    transform: 'translate(-50%, -50%)',
-                    filter: 'drop-shadow(2px 0 0 black) drop-shadow(-2px 0 0 black) drop-shadow(0 2px 0 black) drop-shadow(0 -2px 0 black)',
-                    pointerEvents: 'none' 
-                }} 
-                alt="progress-star"
-              />
-            </div>
+                style={{ width: `${progress}%` }} />
+                <img src={bintangImg} className="absolute top-1/2 w-10 h-10 -translate-y-1/2" 
+                style={{ left: `${progress}%`, 
+                         transform: 'translate(-50%, -50%)',
+                         filter: 'drop-shadow(2px 0 0 black) drop-shadow(-2px 0 0 black) drop-shadow(0 2px 0 black) drop-shadow(0 -2px 0 black)',
+                         pointerEvents: 'none',
+                         scale: isDragging ? '1.3' : '1', // Bintang membesar saat digeser
+                         transition: 'scale 0.2s'}} />
+               </div>
 
             {/* Tombol Kontrol Navigasi */}
             <div className="flex items-center justify-center gap-8">
