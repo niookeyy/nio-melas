@@ -672,69 +672,74 @@
 //   );
 // }
 
+
 import React, { useRef, useState, useEffect } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { MotionPathPlugin } from "gsap/MotionPathPlugin"; 
 import { useGSAP } from '@gsap/react';
 
-// Import Assets
+// Import Assets Gambar (UI & Background)
 import tenxitImg from "./assets/tenxi.jpg";
 import sounhoregImg from "./assets/sound-horeg2.png";
 import citayemfashionweekImg from "./assets/citayem-fashion-week.jpg";
+import bintangImg from "./assets/bintang.png";
+import mataBaseImg from "./assets/mata-senyum.png"; 
+import pupilImg from "./assets/pupil-mata.png"; 
+
+// Import Assets Icon Player
+import playIcon from "./assets/play.png";
+import pauseIcon from "./assets/pause.png";
+import forwardIcon from "./assets/forward.png";
+
+// Import Assets Notasi Musik (Sesuai Folder Anda)
+import nadaGImg from "./assets/nada-g.png";        
+import nadaiimg from "./assets/nada-i.png";          
+import nadaidoubleimg from "./assets/nada-idouble1.png"; // Di folder Anda: nada-idouble1.png
+import nadaitripleimg from "./assets/nada-i-triple.png"; // Di folder Anda: nada-i-triple.png
+import quarterimg from "./assets/quareter.png";       // Di folder Anda typo: quareter.png
+
+// Import Assets Audio (Sesuai Folder Anda)
 import attachedAudio from "./assets/attached.mp3";
 import gamanMaduAudio from "./assets/garam-dan-madu.mp3";
 import kasihAbaAbaAudio from "./assets/kasih-aba-aba.mp3";
 import horegAudio from "./assets/horeg.mp3";
 import horeg2Audio from "./assets/horeg-pt2.mp3";
-import bintangImg from "./assets/bintang.png";
-import nadaGImg from "./assets/nada-g.png";
-import mataBaseImg from "./assets/mata-senyum.png"; 
-import pupilImg from "./assets/pupil-mata.png"; 
-// import notegimg from "./assets/nada-g.png";
-
-
-
-// --- ICON BARU YANG ANDA MAKSUD ---
-import playIcon from "./assets/play.png";
-import pauseIcon from "./assets/pause.png";
-import forwardIcon from "./assets/forward.png";
-
 gsap.registerPlugin(ScrollTrigger, MotionPathPlugin);
 
 const contentData = [
   {
     name: "Hipdut",
     subtitle: "Hip-Hop & Dangdut",
-    desc: "Genre revolusioner yang menggabungkan energi beat modern hip-hop dengan kehangatan cengkok tradisional Indonesia. Fenomena ini menciptakan gelombang baru di industri musik lokal, menyatukan audiens lintas generasi melalui irama yang inklusif dan lirik yang relevan dengan kehidupan sehari-hari.",
-    color: "#a53a42",
+    desc: "Genre revolusioner yang menggabungkan energi beat modern hip-hop dengan kehangatan cengkok tradisional Indonesia.",
+    color: "bg-[#a53a42]",
     bgText: "VIBE",
     image: tenxitImg,
     hasMusicPlayer: true,
     playlist: [
       { title: "Garam & Madu", artist: "Tenxi, Naykilla, & Jemsii", url: gamanMaduAudio }, 
       { title: "Attached", artist: "Tenxi, Anangga, & Suisei" , url: attachedAudio },
-      { title: "Kasih Aba-Aba", artist: "Tenxi, Naykilla, & Jemsii", url: kasihAbaAbaAudio }
+      { title: "Kasih Aba-Aba", artist: "Tenxi, Anangga, & Suisei" , url: kasihAbaAbaAudio }
     ]
   },
   {
     name: "Sound Horeg",
     subtitle: "Adu Sound System",
-    desc: "Tradisi parade audio skala besar khas Jawa Timur yang mengutamakan kekuatan bass hingga menggetarkan fisik. Lebih dari sekadar hiburan, Sound Horeg adalah simbol kebanggaan komunitas dan demonstrasi teknik audio tingkat tinggi yang kini telah menjadi daya tarik wisata budaya kontemporer.",
-    color: "#8d6e63",
+    desc: "Tradisi parade audio skala besar khas Jawa Timur yang mengutamakan kekuatan bass hingga menggetarkan fisik.",
+    color: "bg-[#8d6e63]",
     bgText: "BASS",
     image: sounhoregImg,
     hasMusicPlayer: true,
     playlist: [
-      { title: "Horeg", artist: "Tidak Diketahui", url: horegAudio },  
-      { title: "Horeg-2", artist: "Tidak Diketahui", url: horeg2Audio }
+      { title: "Horeg", artist: "Pasukan Bass", url: horegAudio },
+      { title: "Horeg2", artist: "Pasukan Bass", url: horeg2Audio }
     ]
   },
   {
     name: "Citayam Fashion",
     subtitle: "Street fashion lokal",
-    desc: "Gerakan akar rumput yang mengubah ruang publik menjadi landasan pacu bagi ekspresi diri anak muda tanpa batas. Fenomena ini membuktikan bahwa kreativitas fashion tidak eksklusif milik kelas atas, menciptakan dialog global tentang identitas, keberanian, dan demokratisasi gaya di era digital.",
-    color: "#4a4e51",
+    desc: "Gerakan akar rumput yang mengubah ruang publik menjadi landasan pacu bagi ekspresi diri anak muda tanpa batas.",
+    color: "bg-[#4a4e51]",
     bgText: "STYLE",
     image: citayemfashionweekImg,
     hasMusicPlayer: false,
@@ -746,83 +751,65 @@ const ContemporaryScroll = () => {
   const containerRef = useRef();
   const mainImageRef = useRef();
   const bgTextRef = useRef();
-  const imgTagRef = useRef();
-  const playerRef = useRef();
   const eyeContainerRef = useRef(); 
   const pupilRef = useRef();
-
   const audioRef = useRef(new Audio());
+
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
   const [currentSessionIndex, setCurrentSessionIndex] = useState(0);
   const [progress, setProgress] = useState(0);
 
-  // LOGIKA MATA
+  // LOGIKA MATA (Hanya aktif di session Hipdut)
   useEffect(() => {
     const handleMouseMove = (e) => {
       if (eyeContainerRef.current && pupilRef.current && currentSessionIndex === 0) {
         const rect = eyeContainerRef.current.getBoundingClientRect();
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height / 2;
-        const angle = Math.atan2(e.clientY - centerY, e.clientX - centerX);
-        const maxMove = 12; 
-        const x = Math.cos(angle) * maxMove;
-        const y = Math.sin(angle) * maxMove;
-        gsap.to(pupilRef.current, { x, y, duration: 0.2, ease: "power1.out" });
+        const x = (e.clientX - (rect.left + rect.width / 2)) / 10;
+        const y = (e.clientY - (rect.top + rect.height / 2)) / 10;
+        gsap.to(pupilRef.current, { x: Math.max(-12, Math.min(12, x)), y: Math.max(-12, Math.min(12, y)), duration: 0.2 });
       }
     };
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, [currentSessionIndex]);
 
-  // LOGIKA AUDIO
+  // LOGIKA AUDIO PROGRESS
   useEffect(() => {
     const audio = audioRef.current;
     const updateProgress = () => setProgress((audio.currentTime / audio.duration) * 100 || 0);
     audio.addEventListener('timeupdate', updateProgress);
-    audio.addEventListener('ended', handleNext);
-    return () => {
-      audio.removeEventListener('timeupdate', updateProgress);
-      audio.removeEventListener('ended', handleNext);
-    };
-  }, [currentSessionIndex, currentTrackIndex]);
+    return () => audio.removeEventListener('timeupdate', updateProgress);
+  }, []);
 
   const togglePlay = () => { isPlaying ? audioRef.current.pause() : audioRef.current.play(); setIsPlaying(!isPlaying); };
-  
+
+  // --- LOGIKA FORWARD & BACKWARD YANG DIPERBAIKI ---
   const handleNext = () => {
     const session = contentData[currentSessionIndex];
-    if (session.playlist.length > 0) {
-      playTrack(currentSessionIndex, (currentTrackIndex + 1) % session.playlist.length);
+    if (session.hasMusicPlayer && session.playlist.length > 0) {
+      const nextIndex = (currentTrackIndex + 1) % session.playlist.length;
+      setCurrentTrackIndex(nextIndex);
+      audioRef.current.src = session.playlist[nextIndex].url;
+      audioRef.current.play();
+      setIsPlaying(true);
     }
   };
 
   const handlePrev = () => {
     const session = contentData[currentSessionIndex];
-    if (session.playlist.length > 0) {
-      playTrack(currentSessionIndex, (currentTrackIndex - 1 + session.playlist.length) % session.playlist.length);
-    }
-  };
-
-  const playTrack = (sIdx, tIdx) => {
-    const track = contentData[sIdx].playlist[tIdx];
-    if (track) {
-      audioRef.current.src = track.url;
+    if (session.hasMusicPlayer && session.playlist.length > 0) {
+      const prevIndex = (currentTrackIndex - 1 + session.playlist.length) % session.playlist.length;
+      setCurrentTrackIndex(prevIndex);
+      audioRef.current.src = session.playlist[prevIndex].url;
       audioRef.current.play();
       setIsPlaying(true);
-      setCurrentTrackIndex(tIdx);
     }
   };
-
-  const handleProgressClick = (e) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const clickRatio = (e.clientX - rect.left) / rect.width;
-    audioRef.current.currentTime = clickRatio * audioRef.current.duration;
-  };
+  // ------------------------------------------------
 
   useGSAP(() => {
-    // ANIMASI TANGGA NADA
-    // Jalur 1 (Utama) - Cepat
-// Jalur Atas - Langsung Jalan
+    // Jalur Atas - Langsung Jalan
 gsap.to(".note-1", {
   duration: 5,
   repeat: -1,
@@ -872,134 +859,132 @@ gsap.to(".note-c", {
   motionPath: { path: "#path3", align: "#path3", alignOrigin: [0.5, 0.5] }
 });
 
+    // FITUR STICKY & UPDATE KONTEN SAAT SCROLL
     const sections = gsap.utils.toArray('.content-section');
     sections.forEach((section, i) => {
       ScrollTrigger.create({
         trigger: section,
         start: "top center",
         end: "bottom center",
-        onEnter: () => updateSession(i),
-        onEnterBack: () => updateSession(i),
+        onEnter: () => updateContent(i),
+        onEnterBack: () => updateContent(i),
       });
     });
 
-    function updateSession(index) {
-      const item = contentData[index];
+    function updateContent(index) {
       setCurrentSessionIndex(index);
       setCurrentTrackIndex(0);
-
-      // Reset Audio Source saat scroll
-      if (item.hasMusicPlayer && item.playlist.length > 0) {
-        audioRef.current.src = item.playlist[0].url;
+      
+      // Update Audio Source
+      const session = contentData[index];
+      if (session.hasMusicPlayer && session.playlist.length > 0) {
+        audioRef.current.src = session.playlist[0].url;
       }
       audioRef.current.pause();
       setIsPlaying(false);
 
-      if (imgTagRef.current) imgTagRef.current.src = item.image;
-      gsap.to(containerRef.current, { backgroundColor: item.color, duration: 0.8 });
-      gsap.to(playerRef.current, { opacity: item.hasMusicPlayer ? 1 : 0, y: item.hasMusicPlayer ? 0 : 20, duration: 0.5 });
-      gsap.fromTo(bgTextRef.current, { y: 50, opacity: 0 }, { y: 0, opacity: 0.1, duration: 0.5, textContent: item.bgText });
-      gsap.fromTo(mainImageRef.current, { scale: 0.8, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.6, ease: "back.out(1.7)" });
+      // Animasi transisi gambar & teks background
+      gsap.fromTo(mainImageRef.current, { scale: 0.9, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.5 });
+      gsap.fromTo(bgTextRef.current, { y: 30, opacity: 0 }, { y: 0, opacity: 0.1, duration: 0.4 });
     }
   }, { scope: containerRef });
 
   return (
-    <div ref={containerRef} style={{ display: 'flex', minHeight: '100vh', color: 'white', transition: 'background-color 0.8s' }}>
+    <div ref={containerRef} className={`transition-colors duration-1000 ${contentData[currentSessionIndex].color} min-h-screen text-white font-sans`}>
       
-      {/* SISI KIRI: STICKY */}
-      <div style={{ width: '50%', height: '100vh', position: 'sticky', top: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+      <div className="flex flex-col md:flex-row relative w-full">
         
-        {/* Tangga Nada SVG dengan 3 Jalur */}
-{/* Paranada SVG (3 Jalur Sejajar) */}
-{/* Paranada SVG (3 Jalur Sejajar dengan Gambar Note) */}
-<svg width="400" height="300" viewBox="0 0 400 300" style={{ position: 'absolute', left: 0, top: '15%', opacity: currentSessionIndex === 0 ? 0.6 : 0, transition: 'opacity 0.5s', pointerEvents: 'none' }}>
-    
-    {/* Jalur 1 (Atas) */}
-    <path id="path1" d="M -50 100 Q 100 0 200 100 T 450 50" fill="none" stroke="white" strokeWidth="1"/>
+        {/* SISI KIRI: STICKY (Berfungsi penuh di Desktop) */}
+        <div className="w-full md:w-1/2 h-[65vh] md:h-screen sticky top-0 flex flex-col items-center justify-center p-6 md:p-12 z-20 overflow-hidden">
+          
+          {/* BG TEXT DINAMIS */}
+          <h1 ref={bgTextRef} className="absolute text-[18vw] font-black opacity-10 pointer-events-none uppercase select-none">
+            {contentData[currentSessionIndex].bgText}
+          </h1>
+
+          <svg width="400" height="300" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet" style={{ position: 'absolute', left: 0, top: '15%', opacity: currentSessionIndex === 0 ? 0.6 : 0, transition: 'opacity 0.5s', pointerEvents: 'none' }}>
+    
+    {/* Jalur 1 (Atas) */}
+    <path id="path1" d="M -50 100 Q 100 0 200 100 T 450 50" fill="none" stroke="white" strokeWidth="1"/>
     {/* GANTI CIRCLE MENJADI IMAGE */}
-    <image href={nadaGImg} className="note-1" width="30" height="30" />
-    <image href={nadaGImg} className="note-a" width="30" height="30" />
+    <image href={nadaGImg} className="note-1" width="30" height="30" />
+    <image href={nadaiimg} className="note-a" width="30" height="30" />
 
-    {/* Jalur 2 (Tengah) */}
-    <path id="path2" d="M -50 100 Q 100 0 200 100 T 450 50" transform="translate(0, 40)" fill="none" stroke="white" strokeWidth="1"/>
-    <image href={nadaGImg} className="note-2" width="30" height="30" />
-    <image href={nadaGImg} className="note-b" width="30" height="30" />
+    {/* Jalur 2 (Tengah) */}
+    <path id="path2" d="M -50 100 Q 100 0 200 100 T 450 50" transform="translate(0, 40)" fill="none" stroke="white" strokeWidth="1"/>
+    <image href={nadaidoubleimg} className="note-2" width="30" height="30" />
+    <image href={nadaitripleimg} className="note-b" width="30" height="30" />
 
-    {/* Jalur 3 (Bawah) */}
-    <path id="path3" d="M -50 100 Q 100 0 200 100 T 450 50" transform="translate(0, 80)" fill="none" stroke="white" strokeWidth="1"/>
-    <image href={nadaGImg} className="note-3" width="30" height="30" />
-    <image href={nadaGImg} className="note-c" width="30" height="30" />
+    {/* Jalur 3 (Bawah) */}
+    <path id="path3" d="M -50 100 Q 100 0 200 100 T 450 50" transform="translate(0, 80)" fill="none" stroke="white" strokeWidth="1"/>
+    <image href={quarterimg} className="note-3" width="30" height="30" />
+    <image href={nadaitripleimg} className="note-c" width="30" height="30" />
 </svg>
-        
 
-        <h1 ref={bgTextRef} style={{ position: 'absolute', fontSize: '10vw', fontWeight: '900', opacity: 0.1, zIndex: 0 }}>VIBE</h1>
+          {/* GAMBAR UTAMA (BERUBAH OTOMATIS) */}
+          <div ref={mainImageRef} className="relative z-10 w-full max-w-[280px] md:max-w-[420px] aspect-square rounded-[30px] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.4)] mb-8 border-2 border-white/20">
+            <img 
+              src={contentData[currentSessionIndex].image} 
+              className="w-full h-full object-cover transition-all duration-500" 
+              alt="Visual" 
+            />
+          </div>
 
-        <div style={{ zIndex: 2, textAlign: 'center' }}>
-            <div ref={mainImageRef} style={{ width: '380px', height: '380px', borderRadius: '20px', boxShadow: '0 20px 50px rgba(0,0,0,0.3)', overflow: 'hidden', marginBottom: '30px' }}>
-              <img ref={imgTagRef} src={contentData[0].image} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="Visual" />
+          {/* PLAYER CONTROLS (Hanya muncul jika hasMusicPlayer: true) */}
+          <div className={`w-full max-w-[320px] md:max-w-[420px] transition-all duration-500 z-10 ${contentData[currentSessionIndex].hasMusicPlayer ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'}`}>
+            <div className="w-full h-[4px] bg-white/20 relative mb-10 cursor-pointer rounded-full">
+              <div className="absolute left-0 top-0 h-full bg-white rounded-full" style={{ width: `${progress}%` }} />
+              <img 
+                src={bintangImg} 
+                className="absolute top-1/2 w-10 h-10 -translate-y-1/2" 
+                style={{ 
+                    left: `${progress}%`, 
+                    transform: 'translate(-50%, -50%)',
+                    filter: 'drop-shadow(2px 0 0 black) drop-shadow(-2px 0 0 black) drop-shadow(0 2px 0 black) drop-shadow(0 -2px 0 black)' 
+                }} 
+              />
             </div>
-
-            <div ref={playerRef} style={{ width: '380px', opacity: 0 }}>
-                {/* Progress Bar */}
-                <div onClick={handleProgressClick} style={{ width: '100%', height: '4px', background: 'rgba(255,255,255,0.2)', position: 'relative', marginBottom: '30px', cursor: 'pointer' }}>
-                    <div style={{ position: 'absolute', left: 0, top: 0, height: '100%', width: `${progress}%`, background: 'white' }}></div>
-                    <img src={bintangImg} style={{ position: 'absolute', left: `${progress}%`, top: '50%', transform: 'translate(-50%, -50%)', width: '50px', height: '50px', filter: 'drop-shadow(2px 0 0 black) drop-shadow(-2px 0 0 black) drop-shadow(0 2px 0 black) drop-shadow(0 -2px 0 black)' }} />
-                </div>
-
-                {/* --- PERBAIKAN: KONTROL MENGGUNAKAN IMAGE ICON --- */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
-                    {/* Prev menggunakan forwardIcon yang di-flip horizontal */}
-                    <img 
-                      src={forwardIcon} 
-                      onClick={handlePrev} 
-                      style={{ cursor: 'pointer', width: '50px', transform: 'scaleX(-1)' }} 
-                      alt="Prev" 
-                    />
-                    
-                    {/* Play/Pause Toggle */}
-                    <img 
-                      src={isPlaying ? pauseIcon : playIcon} 
-                      onClick={togglePlay} 
-                      style={{ cursor: 'pointer', width: '85px' }} 
-                      alt="Play/Pause" 
-                    />
-                    
-                    {/* Next */}
-                    <img 
-                      src={forwardIcon} 
-                      onClick={handleNext} 
-                      style={{ cursor: 'pointer', width: '50px' }} 
-                      alt="Next" 
-                    />
-                </div>
-
-                <p style={{ marginTop: '20px', fontSize: '20px', fontWeight: 'bold' }}>{contentData[currentSessionIndex]?.playlist[currentTrackIndex]?.title || ""}</p>
-                <p style={{ fontSize: '18px', opacity: 0.6 }}>{contentData[currentSessionIndex]?.playlist[currentTrackIndex]?.artist || ""}</p>
+            <div className="flex items-center justify-center gap-8">
+              <img src={forwardIcon} onClick={handlePrev} className="w-10 md:w-12 cursor-pointer rotate-180 opacity-80 hover:opacity-100" alt="Prev" />
+              <img src={isPlaying ? pauseIcon : playIcon} onClick={togglePlay} className="w-16 md:w-20 cursor-pointer hover:scale-110 transition-transform" alt="Play" />
+              <img src={forwardIcon} onClick={handleNext} className="w-10 md:w-12 cursor-pointer opacity-80 hover:opacity-100" alt="Next" />
             </div>
+            <div className="text-center mt-6">
+              <p className="text-lg md:text-xl font-bold truncate">{contentData[currentSessionIndex].playlist[currentTrackIndex]?.title || "No Track"}</p>
+              <p className="text-sm opacity-60 uppercase tracking-widest">{contentData[currentSessionIndex].playlist[currentTrackIndex]?.artist || ""}</p>
+            </div>
+          </div>
         </div>
-      </div>
 
-      {/* SISI KANAN: SCROLLABLE */}
-      <div style={{ width: '50%' }}>
-        {contentData.map((item, index) => (
-          <section key={index} className="content-section" style={{ height: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '0 10%' }}>
-            <span style={{ textTransform: 'uppercase', letterSpacing: '4px', fontSize: '0.9rem', marginBottom: '10px' }}>{item.subtitle}</span>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-              {item.name === "Hipdut" && <img src={nadaGImg} style={{ height: '70px' }} />}
-              <h2 style={{ fontSize: '4.5rem', margin: '0 0 20px 0', lineHeight: '1' }}>{item.name}</h2>
-              {item.name === "Hipdut" && (
-                <div ref={eyeContainerRef} style={{ position: 'relative', width: '110px', height: '110px' }}>
-                   <img src={mataBaseImg} style={{ width: '100%', position: 'absolute', zIndex: 1 }} />
-                   <div style={{ position: 'absolute', width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 2 }}>
-                      <img ref={pupilRef} src={pupilImg} style={{ width: '80%' }} />
-                   </div>
-                </div>
-              )}
-            </div>
-            <p style={{ fontSize: '1.2rem', maxWidth: '550px', lineHeight: '1.8', opacity: 0.9 }}>{item.desc}</p>
-            <button style={{ marginTop: '30px', padding: '12px 24px', width: 'fit-content', border: '1px solid white', background: 'transparent', color: 'white', fontWeight: 'bold', cursor: 'pointer' }}>Pelajari Selengkapnya</button>
-          </section>
-        ))}
+        {/* SISI KANAN: SCROLLABLE CONTENT */}
+        <div className="w-full md:w-1/2 relative z-10">
+          {contentData.map((item, index) => (
+            <section key={index} className="content-section min-h-screen flex flex-col justify-center px-8 md:px-20 py-24">
+              <span className="uppercase tracking-[4px] text-xs font-bold mb-4 opacity-70 block">{item.subtitle}</span>
+              
+              <div className="flex flex-wrap items-center gap-4 mb-8">
+                {item.name === "Hipdut" && <img src={nadaGImg} className="h-12 md:h-16" alt="clef" />}
+                <h2 className="text-5xl md:text-[5.5rem] font-black leading-none">{item.name}</h2>
+                
+                {item.name === "Hipdut" && (
+                  <div ref={eyeContainerRef} className="relative w-20 h-20 md:w-28 md:h-28">
+                    <img src={mataBaseImg} className="absolute inset-0 z-10 w-full" />
+                    <img ref={pupilRef} src={pupilImg} className="absolute w-[70%] top-[15%] left-[15%] z-20" />
+                  </div>
+                )}
+              </div>
+
+              <p className="text-lg md:text-xl leading-relaxed max-w-xl opacity-90 mb-10 border-l-2 border-white/40 pl-6">
+                {item.desc}
+              </p>
+              
+              <button className="w-fit px-8 py-3 border border-white font-bold text-sm hover:bg-white hover:text-black transition-all uppercase tracking-widest">
+                Pelajari Selengkapnya
+              </button>
+            </section>
+          ))}
+        </div>
+
       </div>
     </div>
   );
