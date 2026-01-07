@@ -778,9 +778,16 @@ const ContemporaryScroll = () => {
   useEffect(() => {
     const audio = audioRef.current;
     const updateProgress = () => setProgress((audio.currentTime / audio.duration) * 100 || 0);
+    const handleEnded = () => handleNext(); // Pindah lagu otomatis
+
     audio.addEventListener('timeupdate', updateProgress);
-    return () => audio.removeEventListener('timeupdate', updateProgress);
-  }, []);
+    audio.addEventListener('ended', handleEnded);
+
+    return () => {
+      audio.removeEventListener('timeupdate', updateProgress);
+      audio.removeEventListener('ended', handleEnded);
+    };
+  }, [currentTrackIndex, currentSessionIndex]);
 
   const togglePlay = () => { isPlaying ? audioRef.current.pause() : audioRef.current.play(); setIsPlaying(!isPlaying); };
 
@@ -805,6 +812,14 @@ const ContemporaryScroll = () => {
       audioRef.current.play();
       setIsPlaying(true);
     }
+  };
+
+  const handleProgressClick = (e) => {
+    if (!audioRef.current.duration) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const clickedProgress = x / rect.width;
+    audioRef.current.currentTime = clickedProgress * audioRef.current.duration;
   };
   // ------------------------------------------------
 
@@ -902,7 +917,7 @@ gsap.to(".note-c", {
             {contentData[currentSessionIndex].bgText}
           </h1>
 
-          <svg width="400" height="300" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet" style={{ position: 'absolute', left: 0, top: '15%', opacity: currentSessionIndex === 0 ? 0.6 : 0, transition: 'opacity 0.5s', pointerEvents: 'none' }}>
+          <svg width="400" height="300" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet" style={{ position: 'absolute', left: 0, top: '15%', opacity: currentSessionIndex === 0 ? 0.6 : 0, transition: 'opacity', pointerEvents: 'none' }}>
     
     {/* Jalur 1 (Atas) */}
     <path id="path1" d="M -50 100 Q 100 0 200 100 T 450 50" fill="none" stroke="white" strokeWidth="1"/>
@@ -933,17 +948,64 @@ gsap.to(".note-c", {
           {/* PLAYER CONTROLS (Hanya muncul jika hasMusicPlayer: true) */}
           <div className={`w-full max-w-[320px] md:max-w-[420px] transition-all duration-500 z-10 ${contentData[currentSessionIndex].hasMusicPlayer ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'}`}>
             <div className="w-full h-[4px] bg-white/20 relative mb-10 cursor-pointer rounded-full">
-              <div className="absolute left-0 top-0 h-full bg-white rounded-full" style={{ width: `${progress}%` }} />
+              {/* PLAYER CONTROLS & PROGRESS BAR */}
+          <div className={`w-full max-w-[320px] md:max-w-[420px] transition-all duration-500 z-10 ${contentData[currentSessionIndex].hasMusicPlayer ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'}`}>
+            
+            {/* Progress Bar Interaktif */}
+            <div 
+              className="w-full h-[4px] bg-white/20 relative mb-10 cursor-pointer rounded-full"
+              onClick={handleProgressClick}
+            >
+              <div 
+                className="absolute left-0 top-0 h-full bg-white rounded-full" 
+                style={{ width: `${progress}%` }} 
+              />
               <img 
                 src={bintangImg} 
                 className="absolute top-1/2 w-10 h-10 -translate-y-1/2" 
                 style={{ 
                     left: `${progress}%`, 
                     transform: 'translate(-50%, -50%)',
-                    filter: 'drop-shadow(2px 0 0 black) drop-shadow(-2px 0 0 black) drop-shadow(0 2px 0 black) drop-shadow(0 -2px 0 black)' 
+                    filter: 'drop-shadow(2px 0 0 black) drop-shadow(-2px 0 0 black) drop-shadow(0 2px 0 black) drop-shadow(0 -2px 0 black)',
+                    pointerEvents: 'none' 
                 }} 
+                alt="progress-star"
               />
             </div>
+
+            {/* Tombol Kontrol Navigasi */}
+            <div className="flex items-center justify-center gap-8">
+              <img 
+                src={forwardIcon} 
+                onClick={handlePrev} 
+                className="w-10 md:w-12 cursor-pointer rotate-180 opacity-80 hover:opacity-100 active:scale-90 transition-all" 
+                alt="Prev" 
+              />
+              <img 
+                src={isPlaying ? pauseIcon : playIcon} 
+                onClick={togglePlay} 
+                className="w-16 md:w-20 cursor-pointer hover:scale-110 active:scale-95 transition-transform" 
+                alt="Play" 
+              />
+              <img 
+                src={forwardIcon} 
+                onClick={handleNext} 
+                className="w-10 md:w-12 cursor-pointer opacity-80 hover:opacity-100 active:scale-90 transition-all" 
+                alt="Next" 
+              />
+            </div>
+
+            {/* Info Judul & Artist */}
+            <div className="text-center mt-6">
+              <p className="text-lg md:text-xl font-bold truncate">
+                {contentData[currentSessionIndex].playlist[currentTrackIndex]?.title || "No Track"}
+              </p>
+              <p className="text-sm opacity-60 uppercase tracking-widest">
+                {contentData[currentSessionIndex].playlist[currentTrackIndex]?.artist || ""}
+              </p>
+            </div>
+          </div> {/* <--- PENUTUP PLAYER CONTROLS */}
+        </div> {/* <--- PENUTUP SISI KIRI (STICKY) */}
             <div className="flex items-center justify-center gap-8">
               <img src={forwardIcon} onClick={handlePrev} className="w-10 md:w-12 cursor-pointer rotate-180 opacity-80 hover:opacity-100" alt="Prev" />
               <img src={isPlaying ? pauseIcon : playIcon} onClick={togglePlay} className="w-16 md:w-20 cursor-pointer hover:scale-110 transition-transform" alt="Play" />
