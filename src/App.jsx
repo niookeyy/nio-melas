@@ -681,7 +681,7 @@ import { useGSAP } from '@gsap/react';
 
 // Import Assets Gambar (UI & Background)
 import tenxitImg from "./assets/tenxi.jpg";
-import sounhoregImg from "./assets/sound-horeg2.png";
+import sounhoregImg from "./assets/sound-horeg.png";
 import citayemfashionweekImg from "./assets/citayem-fashion-week.jpg";
 import bintangImg from "./assets/bintang.png";
 import mataBaseImg from "./assets/mata-senyum.png"; 
@@ -694,10 +694,14 @@ import forwardIcon from "./assets/forward.png";
 
 // Import Assets Notasi Musik
 import nadaGImg from "./assets/nada-g.png";        
-import nadaiimg from "./assets/nada-i.png";          
+import nadaiimg from "./assets/nada-i.png";           
 import nadaidoubleimg from "./assets/nada-idouble1.png";
 import nadaitripleimg from "./assets/nada-i-triple.png";
 import quarterimg from "./assets/quareter.png";
+
+// Import Assets Tambahan
+import mentahanHoregImg from "./assets/mentahan-horeg.png";
+import iconSoundHoregImg from "./assets/icon-sound-horeg.png";
 
 // Import Assets Audio
 import attachedAudio from "./assets/attached.mp3";
@@ -756,11 +760,47 @@ const ContemporaryScroll = () => {
   const pupilRef = useRef();
   const audioRef = useRef(new Audio());
 
+  // Ref untuk Audio Analyzer
+  const audioContextRef = useRef(null);
+  const analyzerRef = useRef(null);
+  const dataArrayRef = useRef(null);
+  const animationFrameRef = useRef(null);
+
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
   const [currentSessionIndex, setCurrentSessionIndex] = useState(0);
   const [progress, setProgress] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
+
+  // LOGIKA AUDIO ANALYZER (BEAT VISUALIZER)
+  useEffect(() => {
+    const updateBeat = () => {
+      if (isPlaying && contentData[currentSessionIndex].name === "Sound Horeg" && analyzerRef.current) {
+        analyzerRef.current.getByteFrequencyData(dataArrayRef.current);
+        const lowFreq = dataArrayRef.current.slice(0, 5);
+        const average = lowFreq.reduce((a, b) => a + b) / lowFreq.length;
+        
+        // Dinamisasi Scale
+        const scale = 1 + (average / 255) * 0.08;
+        
+        if (mainImageRef.current) {
+          gsap.set(mainImageRef.current, { scale: scale });
+          // Mengatur intensitas gelombang melalui CSS variable berdasarkan volume bass
+          const waveIntensity = (average / 255);
+          mainImageRef.current.style.setProperty('--wave-opacity', waveIntensity);
+          mainImageRef.current.style.setProperty('--wave-speed', `${1 - waveIntensity * 0.5}s`);
+        }
+      } else {
+        if (mainImageRef.current) {
+          gsap.set(mainImageRef.current, { scale: 1 });
+        }
+      }
+      animationFrameRef.current = requestAnimationFrame(updateBeat);
+    };
+
+    updateBeat();
+    return () => cancelAnimationFrame(animationFrameRef.current);
+  }, [isPlaying, currentSessionIndex]);
 
   // LOGIKA MATA
   useEffect(() => {
@@ -795,9 +835,40 @@ const ContemporaryScroll = () => {
     };
   }, [currentTrackIndex, currentSessionIndex, isDragging]);
 
-  const togglePlay = () => { isPlaying ? audioRef.current.pause() : audioRef.current.play(); setIsPlaying(!isPlaying); };
+  // FUNGSI INISIALISASI AUDIO (PENTING AGAR SUARA MUNCUL)
+  const initAudioContext = () => {
+    if (!audioContextRef.current) {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      const ctx = new AudioContext();
+      const source = ctx.createMediaElementSource(audioRef.current);
+      const analyzer = ctx.createAnalyser();
+      
+      analyzer.fftSize = 256;
+      source.connect(analyzer);
+      analyzer.connect(ctx.destination);
+      
+      audioContextRef.current = ctx;
+      analyzerRef.current = analyzer;
+      dataArrayRef.current = new Uint8Array(analyzer.frequencyBinCount);
+    }
+    
+    if (audioContextRef.current.state === 'suspended') {
+      audioContextRef.current.resume();
+    }
+  };
+
+  const togglePlay = () => { 
+    initAudioContext(); // Jalankan inisialisasi saat klik
+    if (isPlaying) {
+      audioRef.current.pause();
+    } else {
+      audioRef.current.play().catch(err => console.error("Playback failed:", err));
+    }
+    setIsPlaying(!isPlaying); 
+  };
 
   const handleNext = () => {
+    initAudioContext();
     const session = contentData[currentSessionIndex];
     if (session.hasMusicPlayer && session.playlist.length > 0) {
       const nextIndex = (currentTrackIndex + 1) % session.playlist.length;
@@ -809,6 +880,7 @@ const ContemporaryScroll = () => {
   };
 
   const handlePrev = () => {
+    initAudioContext();
     const session = contentData[currentSessionIndex];
     if (session.hasMusicPlayer && session.playlist.length > 0) {
       const prevIndex = (currentTrackIndex - 1 + session.playlist.length) % session.playlist.length;
@@ -831,6 +903,7 @@ const ContemporaryScroll = () => {
   };
 
   const handleMouseDown = (e) => {
+    initAudioContext();
     setIsDragging(true);
     const target = e.currentTarget;
     calculateProgress(e.clientX, target);
@@ -895,6 +968,22 @@ const ContemporaryScroll = () => {
 
   return (
     <div ref={containerRef} className={`transition-colors duration-1000 ${contentData[currentSessionIndex].color} min-h-screen text-white font-sans`}>
+      <style>{`
+        @keyframes ripple {
+          0% { transform: scale(1); opacity: var(--wave-opacity, 0.5); }
+          100% { transform: scale(1.5); opacity: 0; }
+        }
+        .wave-element {
+          position: absolute;
+          inset: 0;
+          border: 2px solid white;
+          border-radius: inherit;
+          pointer-events: none;
+          z-index: -1;
+          animation: ripple var(--wave-speed, 1s) infinite linear;
+        }
+      `}</style>
+
       <div className="flex flex-col md:flex-row relative w-full items-start">
         
         {/* SISI KIRI: STICKY */}
@@ -915,8 +1004,29 @@ const ContemporaryScroll = () => {
             <image href={nadaitripleimg} className="note-c" width="30" height="30" />
           </svg>
 
-          <div ref={mainImageRef} className="relative z-10 w-full max-w-[180px] md:max-w-[420px] aspect-square rounded-[20px] md:rounded-[30px] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.4)] mb-4 md:mb-8 border-2 border-white/20">
-            <img src={contentData[currentSessionIndex].image} className="w-full h-full object-cover" alt="Visual" />
+          <div 
+            ref={mainImageRef} 
+            className={`relative z-10 w-full max-w-[180px] md:max-w-[420px] aspect-square overflow-visible shadow-[0_20px_50px_rgba(0,0,0,0.4)] mb-4 md:mb-8 border-2 border-white/20 
+              ${(contentData[currentSessionIndex].name === "Sound Horeg" && isPlaying) 
+                ? 'rounded-[30px] md:rounded-[40px]' 
+                : 'rounded-[20px] md:rounded-[30px]'}`}
+          >
+            {/* ELEMEN GELOMBANG (WAVE) */}
+            {contentData[currentSessionIndex].name === "Sound Horeg" && isPlaying && (
+              <>
+                <div className="wave-element" style={{ animationDelay: '0s' }}></div>
+                <div className="wave-element" style={{ animationDelay: '0.3s' }}></div>
+                <div className="wave-element" style={{ animationDelay: '0.6s' }}></div>
+              </>
+            )}
+
+            <div className="w-full h-full overflow-hidden rounded-[inherit]">
+              <img 
+                src={ (contentData[currentSessionIndex].name === "Sound Horeg" && isPlaying) ? iconSoundHoregImg : contentData[currentSessionIndex].image } 
+                className="w-full h-full object-cover" 
+                alt="Visual" 
+              />
+            </div>
           </div>
 
           <div className={`w-full max-w-[280px] md:max-w-[420px] transition-opacity duration-500 z-10 ${contentData[currentSessionIndex].hasMusicPlayer ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
@@ -950,14 +1060,14 @@ const ContemporaryScroll = () => {
         </div>
 
         {/* SISI KANAN: SCROLLABLE CONTENT */}
-        {/* pb disesuaikan menjadi nilai piksel yang lebih kecil agar tidak terlalu banyak jarak */}
         <div className="w-full md:w-1/2 relative z-10 pb-[100px] md:pb-0">
           {contentData.map((item, index) => (
             <section key={index} className="content-section min-h-[50vh] md:min-h-screen flex flex-col justify-center px-6 md:px-20 py-12 md:py-24">
               <span className="uppercase tracking-[4px] text-[10px] md:text-xs font-bold mb-2 md:mb-4 opacity-70 block">{item.subtitle}</span>
-              <div className="flex flex-wrap items-center gap-3 md:gap-4 mb-4 md:mb-8">
+              <div className="flex flex-wrap items-center gap-0.5 md:gap-1 mb-4 md:mb-8">
                 {item.name === "Hipdut" && <img src={nadaGImg} className="h-10 md:h-16" alt="clef" />}
                 <h2 className="text-4xl md:text-[5.5rem] font-black leading-none">{item.name}</h2>
+                {item.name === "Sound Horeg" && <img src={mentahanHoregImg} className="h-10 md:h-20 mb-2 md:mb-10" alt="horeg-element" />}
                 {item.name === "Hipdut" && (
                   <div ref={eyeContainerRef} className="relative w-16 h-16 md:w-28 md:h-28">
                     <img src={mataBaseImg} className="absolute inset-0 z-10 w-full" />
