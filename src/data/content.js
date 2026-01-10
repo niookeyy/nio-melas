@@ -197,46 +197,47 @@ export const DATA_CONTENT = {
       },
 
       culinary: {
-        title: "Kuliner Nusantara",
-        subtitle: "Cita Rasa Rempah Dunia",
-        items: [
-          {
-            name: "Rendang",
-            desc: "Masakan terenak dunia.",
-            detail:
-              "Daging sapi rempah Minang yang dimasak berjam-jam.",
-            image: culinaryImg,
-          },
-          {
-            name: "Nasi Goreng",
-            desc: "Menu favorit nusantara.",
-            detail:
-              "Nasi goreng bumbu kecap manis ikonik yang mendunia.",
-            image: culinaryImg,
-          },
-          {
-            name: "Sate",
-            desc: "Tusuk daging berbumbu.",
-            detail:
-              "Variasi Nusantara yang kaya rempah.",
-            image: culinaryImg,
-          },
-          {
-            name: "Seblak",
-            desc: "Pedas favorit anak muda.",
-            detail:
-              "Kerupuk basah kuah kencur pedas.",
-            image: culinaryImg,
-          },
-          {
-            name: "Indomie",
-            desc: "Mie instan legendaris.",
-            detail:
-              "Ikon kuliner modern Indonesia.",
-            image: culinaryImg,
-          },
-        ],
-      },
+  title: "Kuliner",
+  subtitle: "Cita rasa warisan Nusantara yang mendunia",
+  items: [
+    {
+      name: "Rendang",
+      desc: "Mahakarya kuliner Minangkabau berupa olahan daging sapi yang dimasak perlahan dengan santan dan rempah pilihan hingga meresap sempurna ke serat daging.",
+      detail: "Rendang bukan sekadar makanan, melainkan simbol budaya Minangkabau. Proses memasaknya yang memakan waktu berjam-jam hingga kuah santan mengering menjadi bumbu karamel hitam adalah kunci dari kelezatannya yang diakui dunia sebagai salah satu makanan terenak.",
+      image: "rendang.png"
+    },
+    {
+      name: "Ayam Betutu",
+      desc: "Hidangan ikonik Bali yang kaya akan bumbu 'base genep', dimasak dengan teknik pengasapan lama hingga daging menjadi sangat empuk dan pedas aromatik.",
+      detail: "Ayam Betutu merupakan kuliner tradisional Bali yang diproses dengan bumbu rempah lengkap. Tekstur dagingnya yang sangat lembut dan rasa pedas yang meresap hingga ke tulang menjadikannya sajian wajib bagi para pecinta kuliner pedas Nusantara.",
+      image: "ayam-betutu.png"
+    },
+    {
+      name: "Seblak",
+      desc: "Jajanan khas Bandung yang memadukan kerupuk basah dengan kuah kencur pedas membara, menciptakan sensasi gurih yang digemari generasi muda.",
+      detail: "Populer sebagai 'street food' favorit, Seblak menawarkan tekstur kenyal dari kerupuk yang direbus dan dipadukan dengan aroma kencur yang kuat. Kini hadir dengan berbagai topping seperti bakso, ceker, dan sosis.",
+      image: "seblak.png"
+    },
+    {
+      name: "Sate",
+      desc: "Potongan daging yang dipanggang di atas bara api tradisional, disajikan dengan siraman bumbu kacang kental yang manis-gurih dan aroma asap yang khas.",
+      detail: "Sate mencerminkan keberagaman Indonesia melalui berbagai variannya, mulai dari Sate Madura dengan bumbu kacang hingga Sate Maranggi. Aroma bakaran arang memberikan karakter rasa yang tidak bisa ditemukan pada teknik memasak lainnya.",
+      image: "sate.png"
+    },
+    {
+      name: "Indomie",
+      desc: "Mie instan kebanggaan Indonesia yang telah mendunia, dikenal karena kelezatan bumbu aslinya yang praktis namun menawarkan rasa yang tak terkalahkan.",
+      detail: "Lebih dari sekadar mie instan, Indomie telah menjadi ikon budaya populer Indonesia. Rasa 'Mie Goreng'-nya yang khas telah diekspor ke puluhan negara dan menjadi favorit lintas bangsa karena keseimbangan rasa gurih dan aromanya.",
+      image: "indomie.png"
+    },
+    {
+      name: "Rawon",
+      desc: "Sup daging legendaris khas Jawa Timur dengan kuah hitam pekat dari kluwek, memberikan cita rasa unik, dalam, dan gurih tiada banding.",
+      detail: "Warna hitam unik dari Rawon berasal dari buah kluwek. Disajikan dengan tauge pendek, telur asin, dan sambal terasi, hidangan ini menawarkan profil rasa yang kaya, earthy (membumi), dan sangat melegakan di lidah.",
+      image: "rawon.png"
+    }
+  ]
+}
     },
   },
 
@@ -412,47 +413,47 @@ export const DATA_CONTENT = {
       },
 
       culinary: {
-        title: "Archipelago Culinary",
-        subtitle:
-          "Taste of World Spices",
-        items: [
-          {
-            name: "Rendang",
-            desc: "World’s tastiest dish.",
-            detail:
-              "Minang spicy beef slow-cooked for hours to perfection.",
-            image: culinaryImg,
-          },
-          {
-            name: "Fried Rice",
-            desc: "Archipelago favorite.",
-            detail:
-              "Iconic fried rice with sweet soy sauce known worldwide.",
-            image: culinaryImg,
-          },
-          {
-            name: "Satay",
-            desc: "Skewered savory meat.",
-            detail:
-              "Endless regional variations.",
-            image: culinaryImg,
-          },
-          {
-            name: "Seblak",
-            desc: "Spicy comfort snack.",
-            detail:
-              "Wet crackers in aromatic spicy broth.",
-            image: culinaryImg,
-          },
-          {
-            name: "Indomie",
-            desc: "Legendary instant noodles.",
-            detail:
-              "A global Indonesian icon.",
-            image: culinaryImg,
-          },
-        ],
-      },
+  title: "Culinary",
+  subtitle: "A world-renowned heritage of Indonesian flavors",
+  items: [
+    {
+      name: "Rendang",
+      desc: "A Minangkabau culinary masterpiece consisting of beef slow-cooked in coconut milk and rich spices until perfectly absorbed into every fiber.",
+      detail: "More than just a dish, Rendang is a symbol of West Sumatran culture. The cooking process takes hours until the coconut milk thickens into a dark, caramelized spice paste—the secret behind its title as one of the world's most delicious foods.",
+      image: "rendang.png"
+    },
+    {
+      name: "Ayam Betutu",
+      desc: "An iconic Balinese delicacy rich in 'base genep' spices, slow-cooked using traditional smoking techniques until the meat is tender and aromatically spicy.",
+      detail: "Ayam Betutu is a staple of Balinese traditional cuisine. Its incredibly soft texture and deep spice penetration, reaching even the bones, make it a must-try for lovers of authentic Indonesian spicy food.",
+      image: "ayam-betutu.png"
+    },
+    {
+      name: "Seblak",
+      desc: "A signature Bandung street food blending chewy wet crackers with a fiery kencur (aromatic ginger) broth, creating a savory sensation loved by the youth.",
+      detail: "Popular as a favorite local street food, Seblak offers a unique chewy texture from boiled crackers combined with a sharp, refreshing herbal aroma. It is now served with various toppings like meatballs, chicken feet, and sausages.",
+      image: "seblak.png"
+    },
+    {
+      name: "Sate",
+      desc: "Skewered meats grilled over traditional charcoal embers, served with a generous pour of thick, sweet-savory peanut sauce and a signature smoky aroma.",
+      detail: "Sate reflects Indonesia's diversity through its many variants, from Madura's peanut sauce sate to Maranggi's marinated sate. The charcoal grilling process provides a depth of flavor that cannot be replicated by any other cooking technique.",
+      image: "sate.png"
+    },
+    {
+      name: "Indomie",
+      desc: "The pride of Indonesia that has gone global, renowned for the unbeatable deliciousness of its authentic seasonings that offer a world-class taste.",
+      detail: "More than just instant noodles, Indomie has become an Indonesian pop-culture icon. Its signature 'Mi Goreng' flavor is exported to dozens of countries and is a global favorite due to its perfect balance of savory notes and aroma.",
+      image: "indomie.png"
+    },
+    {
+      name: "Rawon",
+      desc: "A legendary beef soup from East Java with a deep black broth made from kluwek nuts, offering a unique, earthy, and unparalleled savory flavor.",
+      detail: "Rawon’s unique black color comes from the kluwek nut. Typically served with short bean sprouts, salted egg, and shrimp paste chili, this dish offers a rich, deep flavor profile that is both exotic and comforting.",
+      image: "rawon.png"
+    }
+  ]
+}
     },
   },
 };
