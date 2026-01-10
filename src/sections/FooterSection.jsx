@@ -59,7 +59,7 @@ export default function FooterSection({
 
         <div className="pt-16 border-t border-gray-100 flex flex-col md:flex-row justify-between items-center gap-8">
           <span className="text-lg font-black tracking-widest uppercase italic">
-            © 2024 INDOCULTURE. ID
+            © 2025 INDOCULTURE. ID
           </span>
           <div className="flex gap-12 text-sm font-bold uppercase tracking-widest text-gray-400">
             <a href="#" className="hover:text-black">

@@ -5,7 +5,7 @@ import { MotionPathPlugin } from "gsap/MotionPathPlugin";
 import { useGSAP } from '@gsap/react';
 import { motion } from "framer-motion";
 
-// Assets (Pastikan path sesuai dengan struktur folder Anda)
+// Assets
 import bintangImg from "../assets/bintang.png";
 import mataBaseImg from "../assets/mata-senyum.png";
 import pupilImg from "../assets/pupil-mata.png";
@@ -17,7 +17,7 @@ import nadaiimg from "../assets/nada-i.png";
 import nadaidoubleimg from "../assets/nada-idouble1.png";
 import nadaitripleimg from "../assets/nada-i-triple.png";
 import quarterimg from "../assets/quareter.png";
-import mentahanHoregImg from "../assets/mentahan-horeg.png";
+// import mentahanHoregImg from "../assets/mentahan-horeg.png";
 import iconSoundHoregImg from "../assets/icon-sound-horeg.png";
 
 gsap.registerPlugin(ScrollTrigger, MotionPathPlugin);
@@ -144,8 +144,11 @@ const ContemporaryScroll = ({ sectionData, onOpenModal }) => {
 
   const togglePlay = () => {
     initAudioContext();
-    if (isPlaying) audioRef.current.pause();
-    else audioRef.current.play().catch(err => console.error(err));
+    if (isPlaying) {
+      audioRef.current.pause();
+    } else {
+      audioRef.current.play().catch(err => console.error(err));
+    }
     setIsPlaying(!isPlaying);
   };
 
@@ -195,7 +198,6 @@ const ContemporaryScroll = ({ sectionData, onOpenModal }) => {
       gsap.fromTo(bgTextRef.current, { y: 30, opacity: 0 }, { y: 0, opacity: 0.1, duration: 0.4 });
     }
 
-    // Nada Terbang Animation
     [".note-1", ".note-2", ".note-3", ".note-a", ".note-b", ".note-c"].forEach((n, i) => {
       gsap.to(n, { duration: 5, repeat: -1, ease: "none", delay: i * 0.8,
         motionPath: { path: `#path${(i % 3) + 1}`, align: `#path${(i % 3) + 1}`, alignOrigin: [0.5, 0.5] } 
@@ -211,13 +213,12 @@ const ContemporaryScroll = ({ sectionData, onOpenModal }) => {
       `}</style>
 
       <div className="flex flex-col md:flex-row relative w-full items-start">
-        {/* LEFT PANEL (Sticky) */}
+        {/* LEFT PANEL */}
         <div className="w-full md:w-1/2 h-[60vh] md:h-screen sticky top-0 flex flex-col items-center justify-center p-4 z-20 overflow-hidden select-none">
           <h1 ref={bgTextRef} className="absolute text-[18vw] font-black opacity-10 pointer-events-none uppercase italic">
             {items[currentSessionIndex]?.bgText}
           </h1>
 
-          {/* Floating Notes SVG */}
           <svg className="w-[300px] h-auto absolute left-0 top-[15%] pointer-events-none transition-opacity duration-500" style={{ opacity: currentSessionIndex === 0 ? 0.6 : 0 }}>
             <path id="path1" d="M -50 100 Q 100 0 200 100 T 450 50" fill="none" stroke="white" strokeWidth="0.5"/>
             <image href={nadaGImg} className="note-1" width="30" height="30" />
@@ -230,7 +231,6 @@ const ContemporaryScroll = ({ sectionData, onOpenModal }) => {
             <image href={nadaitripleimg} className="note-c" width="30" height="30" />
           </svg>
 
-          {/* Main Visual Image */}
           <div ref={mainImageRef} className={`relative z-10 w-full max-w-[180px] md:max-w-[420px] aspect-square shadow-2xl transition-all duration-500 border-2 border-white/20 ${(items[currentSessionIndex]?.name === "Sound Horeg" && isPlaying) ? 'rounded-[40px]' : 'rounded-[30px]'}`}>
             {items[currentSessionIndex]?.name === "Sound Horeg" && isPlaying && (
               <><div className="wave-element" /><div className="wave-element" style={{animationDelay:'0.3s'}}/></>
@@ -240,7 +240,6 @@ const ContemporaryScroll = ({ sectionData, onOpenModal }) => {
             </div>
           </div>
 
-          {/* Music Controls */}
           <div className={`w-full max-w-[320px] md:max-w-[480px] mt-10 transition-opacity duration-500 ${items[currentSessionIndex]?.hasMusicPlayer ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
             <div className="group relative w-full h-12 flex items-center cursor-pointer mb-6 touch-none" onMouseDown={handleProgressInteraction}>
               <div className="w-full h-2 bg-white/20 rounded-full overflow-hidden">
@@ -268,7 +267,7 @@ const ContemporaryScroll = ({ sectionData, onOpenModal }) => {
           </div>
         </div>
 
-        {/* RIGHT PANEL (Scrollable) */}
+        {/* RIGHT PANEL */}
         <div className="w-full md:w-1/2 relative z-10">
           {items.map((item, index) => (
             <section key={index} className="content-section h-screen snap-start flex flex-col justify-center px-8 md:px-20 relative">
@@ -282,14 +281,18 @@ const ContemporaryScroll = ({ sectionData, onOpenModal }) => {
                       <img ref={pupilRef} src={pupilImg} className="absolute w-[60%] top-[20%] left-[20%] z-20" alt="pupil" />
                     </div>
                   )}
-                  {item.name === "Sound Horeg" && <img src={mentahanHoregImg} className="h-16 md:h-24 animate-pulse" alt="horeg" />}
+                  {/* {item.name === "Sound Horeg" && <img src={mentahanHoregImg} className="h-16 md:h-24 animate-pulse" alt="horeg" />} */}
                 </div>
                 <div className="w-20 h-1.5 bg-white mb-8 rounded-full" />
                 <p className="text-lg md:text-xl leading-relaxed max-w-xl opacity-90 mb-10 italic border-l-2 border-white/30 pl-6">{item.desc}</p>
                 
-                {/* TOMBOL UNTUK MEMBUKA MODAL */}
+                {/* NEW FEATURE: PAUSE AUDIO WHEN CLICKED */}
                 <button 
-                  onClick={() => onOpenModal(item)} 
+                  onClick={() => {
+                    audioRef.current.pause(); // Mematikan lagu di background
+                    setIsPlaying(false);       // Mereset state tombol & visualizer
+                    onOpenModal(item);         // Membuka modal detail
+                  }} 
                   className="group relative flex items-center gap-4 bg-white text-black px-10 py-4 font-black uppercase tracking-widest hover:bg-black hover:text-white transition-all duration-500 shadow-xl" 
                   style={{ borderRadius: "25px" }}
                 >
