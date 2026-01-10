@@ -1,52 +1,98 @@
 import React from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
-export default function DetailModal({ content, modalContent, onClose, IconX }) {
+// IMPORT ASSETS UNTUK MAPPING GAMBAR KULINER
+import rendangImg from "../assets/rendang.png";
+import ayamBetutuImg from "../assets/ayam-betutu.png";
+import seblakImg from "../assets/seblak.png";
+import sateImg from "../assets/sate.png";
+import indomieImg from "../assets/indomie.png";
+import rawonImg from "../assets/rawon.png";
+
+export default function DetailModal({ modalContent, onClose, IconX }) {
+  if (!modalContent) return null;
+
+  // Logika untuk menentukan gambar mana yang tampil
+  const getDisplayImage = () => {
+    const name = modalContent.name.toLowerCase();
+    if (name === "rendang") return rendangImg;
+    if (name === "ayam betutu") return ayamBetutuImg;
+    if (name === "seblak") return seblakImg;
+    if (name === "sate") return sateImg;
+    if (name === "indomie") return indomieImg;
+    if (name === "rawon") return rawonImg;
+    // Jika bukan kuliner, gunakan property image langsung dari data
+    return modalContent.image;
+  };
+
   return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center p-6">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md"
+      onClick={onClose}
+    >
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        onClick={onClose}
-        className="absolute inset-0 bg-black/90 backdrop-blur-xl"
-      />
-      <motion.div
-        initial={{ scale: 0.9, opacity: 0, y: 20 }}
-        animate={{ scale: 1, opacity: 1, y: 0 }}
-        exit={{ scale: 0.9, opacity: 0, y: 20 }}
-        className="bg-gray-900 text-white w-full max-w-[500px] rounded-[2.5rem] p-8 relative z-10 shadow-2xl border border-white/10"
+        initial={{ scale: 0.9, y: 50 }}
+        animate={{ scale: 1, y: 0 }}
+        className="bg-zinc-900 text-white w-full max-w-5xl rounded-[3rem] overflow-hidden flex flex-col md:flex-row relative border border-white/10"
+        onClick={(e) => e.stopPropagation()}
       >
-        <button
-          onClick={onClose}
-          className="absolute top-6 right-6 text-gray-400 hover:text-white transition bg-white/10 p-2 rounded-full"
+        {/* Tombol Close */}
+        <button 
+          onClick={onClose} 
+          className="absolute top-6 right-6 z-50 w-12 h-12 bg-white/10 rounded-full flex items-center justify-center hover:bg-red-600 transition-all"
         >
           <IconX />
         </button>
 
-        <img
-          src={modalContent.image}
-          className="w-full h-64 object-cover rounded-3xl mb-8 shadow-lg border border-white/10"
-          alt=""
-        />
+        {/* AREA GAMBAR */}
+        <div className="w-full md:w-1/2 h-[300px] md:h-auto overflow-hidden">
+          <img 
+            src={getDisplayImage()} 
+            className="w-full h-full object-cover" 
+            alt={modalContent.name} 
+          />
+        </div>
 
-        <h2 className="text-3xl font-black mb-2 uppercase tracking-tight text-left text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-red-500">
-          {modalContent.name}
-        </h2>
+        {/* AREA TEKS */}
+        <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center">
+          <h2 className="text-4xl md:text-6xl font-black uppercase italic mb-6 leading-none text-red-600">
+            {modalContent.name}
+          </h2>
+          
+          <div className="space-y-6 overflow-y-auto max-h-[300px] pr-4">
+            {/* ✅ MEMISAHKAN TEKS MENJADI PARAGRAF */}
+            {modalContent.detail.split('\n\n').map((paragraph, idx) => (
+              <p key={idx} className="text-gray-300 text-lg md:text-xl font-light italic leading-relaxed">
+                {paragraph}
+              </p>
+            ))}
+          </div>
 
-        <div className="h-1 w-20 bg-gradient-to-r from-yellow-400 to-red-500 rounded mb-6"></div>
+          {/* PLAYLIST (Hanya muncul jika ada) */}
+          {modalContent.hasMusicPlayer && (
+            <div className="mt-8 border-t border-white/10 pt-6">
+              <p className="text-xs font-bold uppercase tracking-widest text-red-500 mb-4">Featured Audio</p>
+              {modalContent.playlist?.map((track, i) => (
+                <div key={i} className="flex items-center justify-between mb-2 text-sm bg-white/5 p-2 rounded-lg">
+                  <span>{track.title} - {track.artist}</span>
+                  <button className="text-[10px] border border-white/30 px-2 py-1 rounded hover:bg-white hover:text-black">PLAY</button>
+                </div>
+              ))}
+            </div>
+          )}
 
-        <p className="text-gray-300 text-lg mb-8 font-light leading-relaxed text-left">
-          {modalContent.detail}
-        </p>
-
-        <button
-          onClick={onClose}
-          className="w-full py-5 bg-white text-black rounded-2xl font-black text-lg hover:bg-yellow-400 transition-all uppercase tracking-widest shadow-xl"
-        >
-          {content.ui.closeBtn}
-        </button>
+          <button
+            onClick={onClose}
+            className="mt-10 bg-white text-black px-10 py-4 font-black uppercase tracking-widest hover:bg-red-600 hover:text-white transition-all w-fit"
+            style={{ borderRadius: "25px" }} // ✅ RADIUS 25PX
+          >
+            Tutup
+          </button>
+        </div>
       </motion.div>
-    </div>
+    </motion.div>
   );
 }

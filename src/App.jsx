@@ -101,7 +101,10 @@ export default function IndoCulture() {
          PENTING: Kita hapus div pembungkus modernRef agar 
          ContemporaryScroll bisa mengontrol tinggi dan sticky-nya sendiri.
       */}
-      <ContemporaryScroll sectionData={content.sections.contemporary} />
+      <ContemporaryScroll 
+        sectionData={content.sections.contemporary} 
+        onOpenModal={openModal} 
+      />
 
       {/* CULINARY SECTION */}
       <CulinarySection
