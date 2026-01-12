@@ -59,7 +59,7 @@ export default function IndoCulture() {
     <div className="bg-black text-white selection:bg-yellow-400 selection:text-black font-sans">
       
       {/* NAVBAR */}
-      <nav className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 px-6 md:px-12 py-6 flex justify-between items-center ${
+      <nav className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 px-4 md:px-6 lg:px-12 py-4 md:py-6 flex justify-between items-center ${
         isScrolled ? "bg-black/80 backdrop-blur-xl border-b border-white/10 py-4" : ""
       }`}>
         <div 
@@ -67,7 +67,7 @@ export default function IndoCulture() {
           className="flex items-center gap-3 group cursor-pointer"
         >
           {/* ✅ LOGO BARU DIAPLIKASIKAN DISINI */}
-          <div className="w-12 h-12 flex items-center justify-center transition-transform duration-500 group-hover:scale-110 group-hover:rotate-[10deg]">
+          <div className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center transition-transform duration-500 group-hover:scale-110 group-hover:rotate-[10deg]">
             <svg xmlns="http://www.w3.org/2000/svg" version="1.0" viewBox="0 0 1080 1080" className="w-full h-full drop-shadow-[0_0_8px_rgba(255,191,191,0.3)]">
               <path fill="#FFBFBF" fillOpacity=".1" d="M854 243.4c0 .2.8 1 1.8 1.7 1.5 1.3 1.6 1.2.3-.4s-2.1-2.1-2.1-1.3m.9 592.3c-1.3 1.6-1.2 1.7.4.4s2.1-2.1 1.3-2.1c-.2 0-1 .8-1.7 1.7"/>
               <path fill="#FFBFBF" fillOpacity=".3" d="M849.9 840.7c-1.3 1.6-1.2 1.7.4.4s2.1-2.1 1.3-2.1c-.2 0-1 .8-1.7 1.7"/>
@@ -94,11 +94,11 @@ export default function IndoCulture() {
               <path fill="#FFBFBF" fillOpacity=".5" d="M971.1 520.6c0 1.1.3 1.4.6.6.3-.7.2-1.6-.1-1.9-.3-.4-.6.2-.5 1.3"/>
             </svg>
           </div>
-          <span className="text-2xl font-black tracking-tighter uppercase italic">{content.hero.title}</span>
+          <span className="text-xl md:text-2xl font-black tracking-tighter uppercase italic">{content.hero.title}</span>
         </div>
 
-        <div className="flex items-center gap-4">
-          <button onClick={toggleLang} className="flex items-center gap-2 px-4 py-2 rounded-full border border-white/20 hover:bg-white hover:text-black transition-all text-xs font-bold uppercase tracking-widest">
+        <div className="flex items-center gap-1 md:gap-2">
+          <button onClick={toggleLang} className="flex items-center gap-2 px-3 md:px-4 py-2 rounded-full border border-white/20 hover:bg-white hover:text-black transition-all text-xs font-bold uppercase tracking-widest">
             <IconGlobe /> {lang === "id" ? "Bahasa" : "English"}
           </button>
           

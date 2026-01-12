@@ -55,17 +55,17 @@ export default function HeroSection({ reference, content, onCta }) {
       {/* MAIN CONTENT */}
       <div className="relative z-[2] min-h-screen flex flex-col items-center justify-center">
         <div className="max-w-5xl px-6 md:px-12 text-center">
-          <h1 className="text-6xl md:text-9xl font-black tracking-tighter uppercase italic mb-6">
+          <h1 className="text-5xl md:text-7xl lg:text-9xl font-black tracking-tighter uppercase italic mb-4 md:mb-6">
             {content.hero.title}
           </h1>
 
-          <p className="text-lg md:text-2xl font-light text-gray-300 mb-10 max-w-3xl mx-auto">
+          <p className="text-base md:text-lg lg:text-2xl font-light text-gray-300 mb-8 md:mb-10 max-w-3xl mx-auto">
             {content.hero.description}
           </p>
 
           <button
             onClick={onCta}
-            className="px-10 py-4 rounded-full bg-white text-black font-black uppercase tracking-widest hover:bg-red-600 hover:text-white transition-all mb-16"
+            className="px-8 md:px-10 py-3 md:py-4 rounded-full bg-white text-black font-black uppercase tracking-widest hover:bg-red-600 hover:text-white transition-all mb-12 md:mb-16 text-sm md:text-base"
           >
             {content.hero.cta}
           </button>
