@@ -1,167 +1,112 @@
-import React, { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import LoadingScreen from "./components/LoadingScreen";
-
-// ✅ DATA
-import { DATA_CONTENT } from "./data/content";
-
-// ✅ SECTIONS
-import HeroSection from "./sections/HeroSection";
-import TraditionalSection from "./sections/TraditionalSection";
-import NatureSliderSection from "./sections/NatureSliderSection";
-import ContemporaryScroll from "./sections/ContemporaryScroll";
-import CulinarySection from "./sections/CulinarySection";
-import FooterSection from "./sections/FooterSection";
-import DetailModal from "./sections/DetailModal";
-
-// --- ICONS ---
-const IconChevronRight = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>;
-const IconX = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>;
-const IconGlobe = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>;
-const IconInstagram = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>;
-const IconTwitter = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-12.7 14.6-5.5-4.6 1.1-6.9 1.1-6.9a6 6 0 0 1-.8-8c2.4 1.1 4.5 2.6 6 4.8a6.6 6.6 0 0 1 9.8-1.5z"/></svg>;
-const IconYoutube = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17"/><path d="m10 15 5-3-5-3z"/></svg>;
-
-// ============================================
-// ✅ MAIN APP COMPONENT (IndoCulture)
-// ============================================
-export default function IndoCulture() {
-  const [isLoading, setIsLoading] = useState(true);
-  const [lang, setLang] = useState("id");
-  const [showModal, setShowModal] = useState(false);
-  const [modalContent, setModalContent] = useState({});
-  const [audioEnabled, setAudioEnabled] = useState(true);
-  const [isScrolled, setIsScrolled] = useState(false);
-
-  const heroRef = useRef();
-  const traditionalRef = useRef();
-  const natureRef = useRef();
-  const culinaryRef = useRef();
-
-  const content = DATA_CONTENT[lang];
-
-  useEffect(() => {
-    const handleScroll = () => { setIsScrolled(window.scrollY > 50); };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  const toggleLang = () => { setLang(lang === "id" ? "en" : "id"); };
-  const openModal = (item) => { setModalContent(item); setShowModal(true); };
-  const scrollToSection = (ref) => { ref.current?.scrollIntoView({ behavior: "smooth" }); };
-
-  // ✅ LOGIKA LOADING SCREEN
-  if (isLoading) {
-    return <LoadingScreen onDone={() => setIsLoading(false)} />;
-  }
-
-  return (
-    <div className="bg-black text-white selection:bg-yellow-400 selection:text-black font-sans">
-      
-      {/* NAVBAR */}
-      <nav className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 px-6 md:px-12 py-6 flex justify-between items-center ${
-        isScrolled ? "bg-black/80 backdrop-blur-xl border-b border-white/10 py-4" : ""
-      }`}>
-        <div 
-          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="flex items-center gap-3 group cursor-pointer"
-        >
-          {/* ✅ LOGO BARU DIAPLIKASIKAN DISINI */}
-          <div className="w-12 h-12 flex items-center justify-center transition-transform duration-500 group-hover:scale-110 group-hover:rotate-[10deg]">
-            <svg xmlns="http://www.w3.org/2000/svg" version="1.0" viewBox="0 0 1080 1080" className="w-full h-full drop-shadow-[0_0_8px_rgba(255,191,191,0.3)]">
-              <path fill="#FFBFBF" fillOpacity=".1" d="M854 243.4c0 .2.8 1 1.8 1.7 1.5 1.3 1.6 1.2.3-.4s-2.1-2.1-2.1-1.3m.9 592.3c-1.3 1.6-1.2 1.7.4.4s2.1-2.1 1.3-2.1c-.2 0-1 .8-1.7 1.7"/>
-              <path fill="#FFBFBF" fillOpacity=".3" d="M849.9 840.7c-1.3 1.6-1.2 1.7.4.4s2.1-2.1 1.3-2.1c-.2 0-1 .8-1.7 1.7"/>
-              <path fill="#BFBFBF" fillOpacity=".4" d="M843.9 846.7c-1.3 1.6-1.2 1.7.4.4s2.1-2.1 1.3-2.1c-.2 0-1 .8-1.7 1.7"/>
-              <path fill="#BFBFBF" fillOpacity=".6" d="M517.8 108.7c.7.3 1.6.2 1.9-.1.4-.3-.2-.6-1.3-.5-1.1 0-1.4.3-.6.6m43 0c.7.3 1.6.2 1.9-.1.4-.3-.2-.6-1.3-.5-1.1 0-1.4.3-.6.6m-43 863c.7.3 1.6.2 1.9-.1.4-.3-.2-.6-1.3-.5-1.1 0-1.4.3-.6.6m42 0c.7.3 1.6.2 1.9-.1.4-.3-.2-.6-1.3-.5-1.1 0-1.4.3-.6.6"/>
-              <path fill="#BFBFBF" fillOpacity=".7" d="M520.8 108.7c.6.2 1.8.2 2.5 0 .6-.3.1-.5-1.3-.5s-1.9.2-1.2.5m36 0c.6.2 1.8.2 2.5 0 .6-.3.1-.5-1.3-.5s-1.9.2-1.2.5M108.1 558.6c0 1.1.3 1.4.6.6.3-.7.2-1.6-.1-1.9-.3-.4-.6.2-.5 1.3m412.7 413.1c.6.2 1.8.2 2.5 0 .6-.3.1-.5-1.3-.5s-1.9.2-1.2.5m36 0c.7.3 1.6.2 1.9-.1.4-.3-.2-.6-1.3-.5-1.1 0-1.4.3-.6.6"/>
-              <path fill="#BFBFBF" fillOpacity=".8" d="M525.3 108.7c.9.2 2.3.2 3 0 .6-.3-.1-.5-1.8-.5-1.6 0-2.2.2-1.2.5m27 0c.9.2 2.3.2 3 0 .6-.3-.1-.5-1.8-.5-1.6 0-2.2.2-1.2.5M108.1 555.6c0 1.1.3 1.4.6.6.3-.7.2-1.6-.1-1.9-.3-.4-.6.2-.5 1.3m863 0c0 1.1.3 1.4.6.6.3-.7.2-1.6-.1-1.9-.3-.4-.6.2-.5 1.3M525.3 971.7c.9.2 2.3.2 3 0 .6-.3-.1-.5-1.8-.5-1.6 0-2.2.2-1.2.5m27 0c.9.2 2.3.2 3 0 .6-.3-.1-.5-1.8-.5-1.6 0-2.2.2-1.2.5"/>
-              <path fill="#BFBFBF" fillOpacity=".9" d="M531.3 108.7c1.5.2 3.7.2 5 0 1.2-.2 0-.4-2.8-.4-2.7 0-3.8.2-2.2.4m13 0c1.5.2 3.7.2 5 0 1.2-.2 0-.4-2.8-.4-2.7 0-3.8.2-2.2.4m-36.5 1c.7.3 1.6.2 1.9-.1.4-.3-.2-.6-1.3-.5-1.1 0-1.4.3-.6.6m63 0c.7.3 1.6.2 1.9-.1.4-.3-.2-.6-1.3-.5-1.1 0-1.4.3-.6.6M256.4 214.2l-1.9 2.3 2.3-1.9c2.1-1.8 2.7-2.6 1.9-2.6-.2 0-1.2 1-2.3 2.2m565.6-.8c0 .2.8 1 1.8 1.7 1.5 1.3 1.6 1.2.3-.4s-2.1-2.1-2.1-1.3m-576.1 10.3-2.4 2.8 2.8-2.4c2.5-2.3 3.2-3.1 2.4-3.1-.2 0-1.4 1.2-2.8 2.7m587.6.3c1 1.1 2 2 2.3 2s-.3-.9-1.3-2-2-2-2.3-2 .3.9 1.3 2m16.5 16.4c0 .2.8 1 1.8 1.7 1.5 1.3 1.6 1.2.3-.4s-2.1-2.1-2.1-1.3m-627.6 6.8-2.9 3.3 3.3-2.9c1.7-1.7 3.2-3.1 3.2-3.3 0-.8-.8-.1-3.6 2.9m633.1-1.2c1 1.1 2 2 2.3 2s-.3-.9-1.3-2-2-2-2.3-2 .3.9 1.3 2m9 10c1 1.1 2 2 2.3 2s-.3-.9-1.3-2-2-2-2.3-2 .3.9 1.3 2m-651.6 1.7c-1.3 1.6-1.2 1.7.4.4s2.1-2.1 1.3-2.1c-.2 0-1 .8-1.7 1.7m-5 6c-1.3 1.6-1.2 1.7.4.4.9-.7 1.7-1.5 1.7-1.7 0-.8-.8-.3-2.1 1.3m-96.8 223.9c0 1.1.3 1.4.6.6.3-.7.2-1.6-.1-1.9-.3-.4-.6.2-.5 1.3m-1 9c0 1.1.3 1.4.6.6.3-.7.2-1.6-.1-1.9-.3-.4-.6.2-.5 1.3m-.9 11.4c0 1.4.2 1.9.5 1.2.2-.6.2-1.8 0-2.5-.3-.6-.5-.1-.5 1.3m-.9 22.5c0 3.8.2 5.3.4 3.2.2-2 .2-5.2 0-7-.2-1.7-.4-.1-.4 3.8m0 19c0 2.7.2 3.8.4 2.2.2-1.5.2-3.7 0-5-.2-1.2-.4 0-.4 2.8m863 0c0 2.7.2 3.8.4 2.2.2-1.5.2-3.7 0-5-.2-1.2-.4 0-.4 2.8m-862.2 22.1c0 1.1.3 1.4.6.6.3-.7.2-1.6-.1-1.9-.3-.4-.6.2-.5 1.3m861 0c0 1.1.3 1.4.6.6.3-.7.2-1.6-.1-1.9-.3-.4-.6.2-.5 1.3M213 822.4c0 .2.8 1 1.8 1.7 1.5 1.3 1.6 1.2.3-.4s-2.1-2.1-2.1-1.3m650.9 2.3c-1.3 1.6-1.2 1.7.4.4s2.1-2.1 1.3-2.1c-.2 0-1 .8-1.7 1.7M223 833.5c1.9 1.9 3.6 3.5 3.9 3.5s-1-1.6-2.9-3.5-3.6-3.5-3.9-3.5 1 1.6 2.9 3.5m632.4.7-1.9 2.3 2.3-1.9c1.2-1.1 2.2-2.1 2.2-2.3 0-.8-.8-.2-2.6 1.9m-4.5 4.5c-1.3 1.6-1.2 1.7.4.4s2.1-2.1 1.3-2.1c-.2 0-1 .8-1.7 1.7m-17 17-2.4 2.8 2.8-2.4c1.5-1.4 2.7-2.6 2.7-2.8 0-.8-.8-.1-3.1 2.4m-587.9.8c1.3 1.4 2.6 2.5 2.8 2.5.3 0-.5-1.1-1.8-2.5s-2.6-2.5-2.8-2.5c-.3 0 .5 1.1 1.8 2.5m10 8.9c0 .2.8 1 1.8 1.7 1.5 1.3 1.6 1.2.3-.4s-2.1-2.1-2.1-1.3m251.8 105.3c.7.3 1.6.2 1.9-.1.4-.3-.2-.6-1.3-.5-1.1 0-1.4.3-.6.6m23.5 1c1.5.2 3.7.2 5 0 1.2-.2 0-.4-2.8-.4-2.7 0-3.8.2-2.2.4m13 0c1.5.2 3.7.2 5 0 1.2-.2 0-.4-2.8-.4-2.7 0-3.8.2-2.2.4"/>
-              <g fill="#FFF" strokeWidth="0">
-                <path d="M520.5 109.1c-77.3 3.1-153.2 27.9-218.8 71.5-104.8 69.7-173.8 180.8-189.8 305.6-3.8 30.1-4 74.8-.4 104.3 11.2 92.1 50.4 176.4 113 243.5 11.6 12.3 14.1 14.8 28 27.4C315 918 397 956.1 481 967.4c28.5 3.9 69.6 5 95.5 2.6 44.1-4.1 83.7-13.5 123-29.2C844 883 946.8 751.6 967.4 598.5c5.1-37.5 5.1-79.2 0-117.5-7.1-53.2-26.3-109.3-53.5-156.1-55.3-95.3-144.7-166.3-249.1-197.8-34.5-10.4-69.2-16.5-100.3-17.6-7.7-.3-16.7-.7-20-.8-3.3-.2-14.1 0-24 .4m57.8 45.5c63.1 6.8 115.5 24.7 167.7 57.3 47.4 29.5 92.6 74.7 122.1 122.1 13.9 22.2 22.4 39.3 33.1 65.9 24.8 62 32 134 20.7 205-10.6 66.9-42.4 134.7-87.4 186.6-44 50.7-91.8 84.6-154.4 109.7-62 24.8-134 32-205 20.7-65.1-10.3-133.6-42-183.6-84.7-44.7-38.2-81.3-86-103-134.1C163.6 647.5 153 599 153 540c0-74.9 19.3-142.5 58.9-206 19.6-31.5 45.8-61.8 76.6-88.5C342.4 198.8 412 167 482 157.1c24-3.5 29.4-3.8 56.3-4 17.4-.1 30.4.4 40 1.5"/>
-                <path d="M277 405.7v20.8l21.3 9.7 21.2 9.7.2 114.8.3 114.8-21.3 9.7-21.2 9.7-.3 21-.2 21.1h160l-.2-21.1-.3-21.1-21-9.7-21-9.6-.3-114.6-.2-114.6 21.5-9.9 21.5-9.9V385H277zm221 155.4v176.1l62.3-.5c34.5-.3 66-1 70.7-1.6 45.2-5.7 75.9-17.7 105.2-41.3 28.3-22.8 46.1-59 52-105.8 1.8-14.6 1.5-52.3-.6-65-5-31.2-15.1-55.5-32.2-77.6-25.9-33.4-70.3-55.1-121.9-59.4-6.6-.5-39.8-1-73.7-1H498zm142.5-113.3c26.4 5.8 45 18.8 57.8 40.3 6.5 11 11.7 30.2 13.8 50.7 1.4 13 .6 41.4-1.4 53.3-7.3 43.1-30.6 69.8-69 79.3-14.3 3.6-25 4.6-48.9 4.6H572V444.8l29.8.5c24.7.4 31.2.8 38.7 2.5"/>
-              </g>
-              <path fill="#FFBFBF" d="m239.9 229.7-2.4 2.8 2.8-2.4c2.5-2.3 3.2-3.1 2.4-3.1-.2 0-1.4 1.2-2.8 2.7m600.1.7c0 .2.8 1 1.8 1.7 1.5 1.3 1.6 1.2.3-.4s-2.1-2.1-2.1-1.3m-609.6 8.8-1.9 2.3 2.3-1.9c2.1-1.8 2.7-2.6 1.9-2.6-.2 0-1.2 1-2.3 2.2m.1 601.8c1 1.1 2 2 2.3 2s-.3-.9-1.3-2-2-2-2.3-2 .3.9 1.3 2m9 9c1 1.1 2 2 2.3 2s-.3-.9-1.3-2-2-2-2.3-2 .3.9 1.3 2"/>
-              <path fill="#FFBFBF" fillOpacity=".9" d="M823.9 864.7c-1.3 1.6-1.2 1.7.4.4s2.1-2.1 1.3-2.1c-.2 0-1 .8-1.7 1.7"/>
-              <path fill="#BFBFBF" d="M277.9 254.7c-1.3 1.6-1.2 1.7.4.4.9-.7 1.7-1.5 1.7-1.7 0-.8-.8-.3-2.1 1.3m524.1.8c1.3 1.4 2.6 2.5 2.8 2.5.3 0-.5-1.1-1.8-2.5s-2.6-2.5-2.8-2.5c-.3 0 .5 1.1 1.8 2.5m-547.1 22.2-2.4 2.8 2.8-2.4c2.5-2.3 3.2-3.1 2.4-3.1-.2 0-1.4 1.2-2.8 2.7m569.1-.3c0 .2.8 1 1.8 1.7 1.5 1.3 1.6 1.2.3-.4s-2.1-2.1-2.1-1.3M316.8 384.7c22.1.2 58.3.2 80.5 0 22.1-.1 4-.2-40.3-.2s-62.4.1-40.2.2m209 0c15.6.2 40.8.2 56 0 15.2-.1 2.5-.2-28.3-.2s-43.3.1-27.7.2m102 1c.6.2 1.8.2 2.5 0 .6-.3.1-.5-1.3-.5s-1.9.2-1.2.5M744 432.5c1.9 1.9 3.6 3.5 3.9 3.5s-1-1.6-2.9-3.5-3.6-3.5-3.9-3.5 1 1.6 2.9 3.5m-124.7 13.2c.9.2 2.3.2 3 0 .6-.3-.1-.5-1.8-.5-1.6 0-2.2.2-1.2.5m64.2 24.3c2.1 2.2 4.1 4 4.4 4s-1.3-1.8-3.4-4-4.1-4-4.4-4 1.3 1.8 3.4 4m27.6 63.6c0 1.1.3 1.4.6.6.3-.7.2-1.6-.1-1.9-.3-.4-.6.2-.5 1.3m78 8c0 1.1.3 1.4.6.6.3-.7.2-1.6-.1-1.9-.3-.4-.6.2-.5 1.3m-77 3c0 1.1.3 1.4.6.6.3-.7.2-1.6-.1-1.9-.3-.4-.6.2-.5 1.3m77.1 26.9c0 1.6.2 2.2.5 1.2.2-.9.2-2.3 0-3-.3-.6-.5.1-.5 1.8m-77.1 3.1c0 1.1.3 1.4.6.6.3-.7.2-1.6-.1-1.9-.3-.4-.6.2-.5 1.3m76 11c0 1.1.3 1.4.6.6.3-.7.2-1.6-.1-1.9-.3-.4-.6.2-.5 1.3m-175.8 90.1c.9.2 2.5.2 3.5 0 .9-.3.1-.5-1.8-.5s-2.7.2-1.7.5m137.6 5c-1.3 1.6-1.2 1.7.4.4s2.1-2.1 1.3-2.1c-.2 0-1 .8-1.7 1.7m-10 10c-1.3 1.6-1.2 1.7.4.4.9-.7 1.7-1.5 1.7-1.7 0-.8-.8-.3-2.1 1.3m-114.1 45c.7.3 1.6.2 1.9-.1.4-.3-.2-.6-1.3-.5-1.1 0-1.4.3-.6.6m-18 1c1.2.2 3 .2 4 0 .9-.3-.1-.5-2.3-.4-2.2 0-3 .2-1.7.4M255 802.5c1.3 1.4 2.6 2.5 2.8 2.5.3 0-.5-1.1-1.8-2.5s-2.6-2.5-2.8-2.5c-.3 0 .5 1.1 1.8 2.5m569.9-.8c-1.3 1.6-1.2 1.7.4.4s2.1-2.1 1.3-2.1c-.2 0-1 .8-1.7 1.7m-23 23-2.4 2.8 2.8-2.4c1.5-1.4 2.7-2.6 2.7-2.8 0-.8-.8-.1-3.1 2.4m-524.9-.3c0 .2.8 1 1.8 1.7 1.5 1.3 1.6 1.2.3-.4s-2.1-2.1-2.1-1.3"/><path fill="#BF8080" d="M516.3 153.7c1.5.2 3.9.2 5.5 0 1.5-.2.2-.4-2.8-.4s-4.3.2-2.7.4m42 0c1.5.2 3.9.2 5.5 0 1.5-.2.2-.4-2.8-.4s-4.3.2-2.7.4m-62.5 2c.7.3 1.6.2 1.9-.1.4-.3-.2-.6-1.3-.5-1.1 0-1.4.3-.6.6m87 0c.7.3 1.6.2 1.9-.1.4-.3-.2-.6-1.3-.5-1.1 0-1.4.3-.6.6m-284.9 82c-1.3 1.6-1.2 1.7.4.4.9-.7 1.7-1.5 1.7-1.7 0-.8-.8-.3-2.1 1.3m482.1-1.3c0 .2.8 1 1.8 1.7 1.5 1.3 1.6 1.2.3-.4s-2.1-2.1-2.1-1.3m-495.1 12.3c-1.3 1.6-1.2 1.7.4.4.9-.7 1.7-1.5 1.7-1.7 0-.8-.8-.3-2.1 1.3m508.1-1.3c0 .2.8 1 1.8 1.7 1.5 1.3 1.6 1.2.3-.4s-2.1-2.1-2.1-1.3m-518.6 10.8-1.9 2.3 2.3-1.9c2.1-1.8 2.7-2.6 1.9-2.6-.2 0-1.2 1-2.3 2.2m532.1 1.8c1 1.1 2 2 2.3 2s-.3-.9-1.3-2-2-2-2.3-2 .3.9 1.3 2m-547.1 13.2-1.9 2.3 2.3-1.9c2.1-1.8 2.7-2.6 1.9-2.6-.2 0-1.2 1-2.3 2.2m562.1 1.8c1 1.1 2 2 2.3 2s-.3-.9-1.3-2-2-2-2.3-2 .3.9 1.3 2m-573.6 10.7c-1.3 1.6-1.2 1.7.4.4.9-.7 1.7-1.5 1.7-1.7 0-.8-.8-.3-2.1 1.3m582.1-1.3c0 .2.8 1 1.8 1.7 1.5 1.3 1.6 1.2.3-.4s-2.1-2.1-2.1-1.3m-593.1 14.3c-1.3 1.6-1.2 1.7.4.4s2.1-2.1 1.3-2.1c-.2 0-1 .8-1.7 1.7m604.1-1.3c0 .2.8 1 1.8 1.7 1.5 1.3 1.6 1.2.3-.4s-2.1-2.1-2.1-1.3M437.4 405.5c0 12.1.2 16.9.3 10.7.2-6.2.2-16.1 0-22-.1-5.9-.3-.8-.3 11.3m173.4-20.8c1.2.2 3 .2 4 0 .9-.3-.1-.5-2.3-.4-2.2 0-3 .2-1.7.4m21 1c.6.2 1.8.2 2.5 0 .6-.3.1-.5-1.3-.5s-1.9.2-1.2.5M738 426.4c0 .2.8 1 1.8 1.7 1.5 1.3 1.6 1.2.3-.4s-2.1-2.1-2.1-1.3m-154.7 19.3c6.4.2 17 .2 23.5 0 6.4-.1 1.1-.3-11.8-.3s-18.2.2-11.7.3M394.2 560.2c-.1 63.1.1 114.9.6 115.1.6.5.6-78.9-.1-188.3-.1-22.8-.3 10.1-.5 73.2m-239.1-63.6c0 1.1.3 1.4.6.6.3-.7.2-1.6-.1-1.9-.3-.4-.6.2-.5 1.3m769 0c0 1.1.3 1.4.6.6.3-.7.2-1.6-.1-1.9-.3-.4-.6.2-.5 1.3M153.3 519c0 3 .2 4.3.4 2.7.2-1.5.2-3.9 0-5.5-.2-1.5-.4-.2-.4 2.8m773 0c0 3 .2 4.3.4 2.7.2-1.5.2-3.9 0-5.5-.2-1.5-.4-.2-.4 2.8m-215.2 17.6c0 1.1.3 1.4.6.6.3-.7.2-1.6-.1-1.9-.3-.4-.6.2-.5 1.3m78 2c0 1.1.3 1.4.6.6.3-.7.2-1.6-.1-1.9-.3-.4-.6.2-.5 1.3m-76.8 10.9c0 2.2.2 3 .4 1.7.2-1.2.2-3 0-4-.3-.9-.5.1-.4 2.3m-559 11.5c0 3 .2 4.3.4 2.7.2-1.5.2-3.9 0-5.5-.2-1.5-.4-.2-.4 2.8m773 0c0 3 .2 4.3.4 2.7.2-1.5.2-3.9 0-5.5-.2-1.5-.4-.2-.4 2.8m-214 8c0 2.5.2 3.5.4 2.2.2-1.2.2-3.2 0-4.5-.2-1.2-.4-.2-.4 2.3m76.9 7.5c0 1.6.2 2.2.5 1.2.2-.9.2-2.3 0-3-.3-.6-.5.1-.5 1.8m-78.1 6.1c0 1.1.3 1.4.6.6.3-.7.2-1.6-.1-1.9-.3-.4-.6.2-.5 1.3m-556 1c0 1.1.3 1.4.6.6.3-.7.2-1.6-.1-1.9-.3-.4-.6.2-.5 1.3m769 0c0 1.1.3 1.4.6.6.3-.7.2-1.6-.1-1.9-.3-.4-.6.2-.5 1.3m-245.2 69.1c-1.3 1.6-1.2 1.7.4.4s2.1-2.1 1.3-2.1c-.2 0-1 .8-1.7 1.7m-56.1 22c.7.3 1.6.2 1.9-.1.4-.3-.2-.6-1.3-.5-1.1 0-1.4.3-.6.6m-41 1c5.7.2 14.7.2 20 0 5.3-.1.7-.3-10.3-.3s-15.4.2-9.7.3M437 715.8l.5 21.7.3-20.9c.1-11.5-.1-21.3-.5-21.7-.5-.5-.6 9-.3 20.9m201.8 18.9c.7.3 1.6.2 1.9-.1.4-.3-.2-.6-1.3-.5-1.1 0-1.4.3-.6.6m-24 2c1.2.2 3 .2 4 0 .9-.3-.1-.5-2.3-.4-2.2 0-3 .2-1.7.4M236 780.4c0 .2.8 1 1.8 1.7 1.5 1.3 1.6 1.2.3-.4s-2.1-2.1-2.1-1.3m605.9 1.3c-1.3 1.6-1.2 1.7.4.4.9-.7 1.7-1.5 1.7-1.7 0-.8-.8-.3-2.1 1.3M247 793.4c0 .2.8 1 1.8 1.7 1.5 1.3 1.6 1.2.3-.4s-2.1-2.1-2.1-1.3m583.9 1.3c-1.3 1.6-1.2 1.7.4.4s2.1-2.1 1.3-2.1c-.2 0-1 .8-1.7 1.7m-9.5 10.5-1.9 2.3 2.3-1.9c1.2-1.1 2.2-2.1 2.2-2.3 0-.8-.8-.2-2.6 1.9M259.5 807c1 1.1 2 2 2.3 2s-.3-.9-1.3-2-2-2-2.3-2 .3.9 1.3 2m546.9 13.2-1.9 2.3 2.3-1.9c2.1-1.8 2.7-2.6 1.9-2.6-.2 0-1.2 1-2.3 2.2M274.5 822c1 1.1 2 2 2.3 2s-.3-.9-1.3-2-2-2-2.3-2 .3.9 1.3 2m9.5 8.4c0 .2.8 1 1.8 1.7 1.5 1.3 1.6 1.2.3-.4s-2.1-2.1-2.1-1.3m509.9 1.3c-1.3 1.6-1.2 1.7.4.4.9-.7 1.7-1.5 1.7-1.7 0-.8-.8-.3-2.1 1.3M297 841.4c0 .2.8 1 1.8 1.7 1.5 1.3 1.6 1.2.3-.4s-2.1-2.1-2.1-1.3m483.9 1.3c-1.3 1.6-1.2 1.7.4.4s2.1-2.1 1.3-2.1c-.2 0-1 .8-1.7 1.7m-285.1 82c.7.3 1.6.2 1.9-.1.4-.3-.2-.6-1.3-.5-1.1 0-1.4.3-.6.6m87 0c.7.3 1.6.2 1.9-.1.4-.3-.2-.6-1.3-.5-1.1 0-1.4.3-.6.6m-66.5 2c1.5.2 3.9.2 5.5 0 1.5-.2.2-.4-2.8-.4s-4.3.2-2.7.4m42 0c1.5.2 3.9.2 5.5 0 1.5-.2.2-.4-2.8-.4s-4.3.2-2.7.4"/>
-              <path fill="#BF4040" d="M526.3 153.7c1.5.2 3.7.2 5 0 1.2-.2 0-.4-2.8-.4-2.7 0-3.8.2-2.2.4m23 0c1.5.2 3.7.2 5 0 1.2-.2 0-.4-2.8-.4-2.7 0-3.8.2-2.2.4m-41.5 1c.7.3 1.6.2 1.9-.1.4-.3-.2-.6-1.3-.5-1.1 0-1.4.3-.6.6m63 0c.7.3 1.6.2 1.9-.1.4-.3-.2-.6-1.3-.5-1.1 0-1.4.3-.6.6m-268.9 80c-1.3 1.6-1.2 1.7.4.4.9-.7 1.7-1.5 1.7-1.7 0-.8-.8-.3-2.1 1.3m474.1-1.3c0 .2.8 1 1.8 1.7 1.5 1.3 1.6 1.2.3-.4s-2.1-2.1-2.1-1.3m-487.1 12.3c-1.3 1.6-1.2 1.7.4.4s2.1-2.1 1.3-2.1c-.2 0-1 .8-1.7 1.7m500.1-1.3c0 .2.8 1 1.8 1.7 1.5 1.3 1.6 1.2.3-.4s-2.1-2.1-2.1-1.3m-507.6 7.8-1.9 2.3 2.3-1.9c2.1-1.8 2.7-2.6 1.9-2.6-.2 0-1.2 1-2.3 2.2m516.6.3c1.3 1.4 2.6 2.5 2.8 2.5.3 0-.5-1.1-1.8-2.5s-2.6-2.5-2.8-2.5c-.3 0 .5 1.1 1.8 2.5m-527.6 9.7-1.9 2.3 2.3-1.9c2.1-1.8 2.7-2.6 1.9-2.6-.2 0-1.2 1-2.3 2.2m547.1 8.8c1 1.1 2 2 2.3 2s-.3-.9-1.3-2-2-2-2.3-2 .3.9 1.3 2m-565.6 10.7-2.4 2.8 2.8-2.4c2.5-2.3 3.2-3.1 2.4-3.1-.2 0-1.4 1.2-2.8 2.7m575.6.3c1 1.1 2 2 2.3 2s-.3-.9-1.3-2-2-2-2.3-2 .3.9 1.3 2m-582.6 7.7c-1.3 1.6-1.2 1.7.4.4s2.1-2.1 1.3-2.1c-.2 0-1 .8-1.7 1.7m588.1-1.3c0 .2.8 1 1.8 1.7 1.5 1.3 1.6 1.2.3-.4s-2.1-2.1-2.1-1.3m-599.1 14.3c-1.3 1.6-1.2 1.7.4.4.9-.7 1.7-1.5 1.7-1.7 0-.8-.8-.3-2.1 1.3m610.1-1.3c0 .2.8 1 1.8 1.7 1.5 1.3 1.6 1.2.3-.4s-2.1-2.1-2.1-1.3M276.4 405.5c0 12.1.2 16.9.3 10.7.2-6.2.2-16.1 0-22-.1-5.9-.3-.8-.3 11.3m220.8 155.2L497 738l51.3-.2 51.2-.3-50.7-.2-50.8-.3-.3-176.8-.2-176.7zm120.6-176c1.2.2 3 .2 4 0 .9-.3-.1-.5-2.3-.4-2.2 0-3 .2-1.7.4m18 1c.7.3 1.6.2 1.9-.1.4-.3-.2-.6-1.3-.5-1.1 0-1.4.3-.6.6M750 438.4c0 .2.8 1 1.8 1.7 1.5 1.3 1.6 1.2.3-.4s-2.1-2.1-2.1-1.3M319 560.7c-.3 63.4-.2 114.9.3 114.4.4-.4.6-52.2.5-115.2l-.3-114.4zm253.5-.2c0 63.2.1 89 .2 57.2.2-31.8.2-83.6 0-115-.1-31.5-.2-5.5-.2 57.8m54.3-113.8c.7.3 1.6.2 1.9-.1.4-.3-.2-.6-1.3-.5-1.1 0-1.4.3-.6.6m-472.7 61.9c0 1.1.3 1.4.6.6.3-.7.2-1.6-.1-1.9-.3-.4-.6.2-.5 1.3m771 0c0 1.1.3 1.4.6.6.3-.7.2-1.6-.1-1.9-.3-.4-.6.2-.5 1.3m-771.8 19.9c0 2.7.2 3.8.4 2.2.2-1.5.2-3.7 0-5-.2-1.2-.4 0-.4 2.8m773 0c0 2.7.2 3.8.4 2.2.2-1.5.2-3.7 0-5-.2-1.2-.4 0-.4 2.8M789.2 535c0 1.4.2 1.9.5 1.2.2-.6.2-1.8 0-2.5-.3-.6-.5-.1-.5 1.3m-635.9 16.5c0 2.7.2 3.8.4 2.2.2-1.5.2-3.7 0-5-.2-1.2-.4 0-.4 2.8m773 0c0 2.7.2 3.8.4 2.2.2-1.5.2-3.7 0-5-.2-1.2-.4 0-.4 2.8m-214 7.5c0 3.6.2 5 .4 3.2.2-1.7.2-4.7 0-6.5-.2-1.7-.4-.3-.4 3.3m77.9-2c0 1.4.2 1.9.5 1.2.2-.6.2-1.8 0-2.5-.3-.6-.5-.1-.5 1.3m-636.1 14.6c0 1.1.3 1.4.6.6.3-.7.2-1.6-.1-1.9-.3-.4-.6.2-.5 1.3m771 0c0 1.1.3 1.4.6.6.3-.7.2-1.6-.1-1.9-.3-.4-.6.2-.5 1.3m-214 8c0 1.1.3 1.4.6.6.3-.7.2-1.6-.1-1.9-.3-.4-.6.2-.5 1.3m78 1c0 1.1.3 1.4.6.6.3-.7.2-1.6-.1-1.9-.3-.4-.6.2-.5 1.3m-1 10c0 1.1.3 1.4.6.6.3-.7.2-1.6-.1-1.9-.3-.4-.6.2-.5 1.3m-104.7 57.6-2.9 3.3 3.3-2.9c1.7-1.7 3.2-3.1 3.2-3.3 0-.8-.8-.1-3.6 2.9m-407.2 68L276 738l81.3-.2 81.2-.3-80.7-.2-80.8-.3-.3-21.3-.2-21.2zm354.6 19.5c.7.3 1.6.2 1.9-.1.4-.3-.2-.6-1.3-.5-1.1 0-1.4.3-.6.6m-10 1c.7.3 1.6.2 1.9-.1.4-.3-.2-.6-1.3-.5-1.1 0-1.4.3-.6.6M233 776.4c0 .2.8 1 1.8 1.7 1.5 1.3 1.6 1.2.3-.4s-2.1-2.1-2.1-1.3m611.9 1.3c-1.3 1.6-1.2 1.7.4.4.9-.7 1.7-1.5 1.7-1.7 0-.8-.8-.3-2.1 1.3M244 789.4c0 .2.8 1 1.8 1.7 1.5 1.3 1.6 1.2.3-.4s-2.1-2.1-2.1-1.3m589.9 1.3c-1.3 1.6-1.2 1.7.4.4s2.1-2.1 1.3-2.1c-.2 0-1 .8-1.7 1.7M252 798.5c1.3 1.4 2.6 2.5 2.8 2.5.3 0-.5-1.1-1.8-2.5s-2.6-2.5-2.8-2.5c-.3 0 .5 1.1 1.8 2.5m575.4-.3-1.9 2.3 2.3-1.9c1.2-1.1 2.2-2.1 2.2-2.3 0-.8-.8-.2-2.6 1.9m-10 11-1.9 2.3 2.3-1.9c2.1-1.8 2.7-2.6 1.9-2.6-.2 0-1.2 1-2.3 2.2M270.5 818c1 1.1 2 2 2.3 2s-.3-.9-1.3-2-2-2-2.3-2 .3.9 1.3 2m527.4 9.7-2.4 2.8 2.8-2.4c1.5-1.4 2.7-2.6 2.7-2.8 0-.8-.8-.1-3.1 2.4m-516.4.3c1 1.1 2 2 2.3 2s-.3-.9-1.3-2-2-2-2.3-2 .3.9 1.3 2m6.5 5.4c0 .2.8 1 1.8 1.7 1.5 1.3 1.6 1.2.3-.4s-2.1-2.1-2.1-1.3m501.9 1.3c-1.3 1.6-1.2 1.7.4.4s2.1-2.1 1.3-2.1c-.2 0-1 .8-1.7 1.7M301 844.4c0 .2.8 1 1.8 1.7 1.5 1.3 1.6 1.2.3-.4s-2.1-2.1-2.1-1.3m475.9 1.3c-1.3 1.6-1.2 1.7.4.4.9-.7 1.7-1.5 1.7-1.7 0-.8-.8-.3-2.1 1.3m-269.1 80c.7.3 1.6.2 1.9-.1.4-.3-.2-.6-1.3-.5-1.1 0-1.4.3-.6.6m63 0c.7.3 1.6.2 1.9-.1.4-.3-.2-.6-1.3-.5-1.1 0-1.4.3-.6.6m-44.5 1c1.5.2 3.7.2 5 0 1.2-.2 0-.4-2.8-.4-2.7 0-3.8.2-2.2.4m23 0c1.5.2 3.7.2 5 0 1.2-.2 0-.4-2.8-.4-2.7 0-3.8.2-2.2.4"/>
-              <g fill="#BF0000" strokeWidth="0">
-                <path d="M519 154c-85.2 4.6-165.7 36.9-230.1 92.3-18 15.5-25.3 22.7-40.4 40-30.9 35.5-52.3 71.3-70 116.7-16.7 43-24.8 87.7-24.8 137 0 58.5 10.9 108.4 35.6 162.6 9.8 21.6 26.5 49.5 41.9 70.1 7.1 9.5 27.5 32.9 36.3 41.7 30.7 30.5 72.3 59.3 110.5 76.6 53.7 24.3 102.9 35.1 161 35.2 25 .1 37-.8 61-4.3 60-8.9 121.8-35 172.7-73.1 9.5-7.1 32.9-27.5 41.7-36.3 30.5-30.7 59.3-72.3 76.6-110.5 24.5-54.2 35.2-103.2 35.2-162 0-33.4-3.1-61.3-10-89.5-15-61.2-42.5-115-82.5-161.6-15.5-18-22.7-25.3-40-40.4-35.5-30.9-71.3-52.3-116.7-70-48.1-18.7-104.3-27.4-158-24.5m-81 251.4v21.4l-21.5 9.8-21.5 9.9.2 114.3.3 114.4 21.2 9.6 21.2 9.7.1 21.7V738H276l.2-21.7.3-21.7 21-9.6 21-9.7.3-114.4.2-114.5-21.5-9.8-21.5-9.9V384h162zm208-19c43.9 7.2 73.7 21.2 99 46.6 20.9 20.9 33.1 43.4 40.4 75 3.6 15.5 4.7 27.2 4.7 49.5 0 39.8-5.8 67.4-19.8 94.8-11.5 22.4-28.3 40.4-52 55.5-14.1 9-32.3 16.6-50.3 21.2-29.5 7.4-37.4 8-109.2 8.7l-61.8.6V383.8l69.3.5c59.4.3 70.7.6 79.7 2.1"/>
-                <path d="M573 560.5V675h21.8c24.2 0 33.8-.9 47.8-4.5 32.4-8.5 53.1-28.8 63.2-62 5-16.3 5.7-22.7 5.7-49.5-.1-27.5-1.1-35.7-7.1-54-9.1-28.1-27.7-46-56.7-54.4-12.8-3.7-22.3-4.6-49.9-4.6H573z"/>
-              </g>
-              <path fill="#BF8080" fillOpacity=".4" d="M228.9 239.7c-1.3 1.6-1.2 1.7.4.4.9-.7 1.7-1.5 1.7-1.7 0-.8-.8-.3-2.1 1.3"/>
-              <path fill="#BF8080" fillOpacity=".5" d="m237.4 231.2-2.9 3.3 3.3-2.9c1.7-1.7 3.2-3.1 3.2-3.3 0-.8-.8-.1-3.6 2.9M235 846.3c0 .2 1.5 1.6 3.3 3.3l3.2 2.9-2.9-3.3c-2.8-3-3.6-3.7-3.6-2.9"/>
-              <path fill="#BF8080" fillOpacity=".7" d="M108.1 519.6c0 1.1.3 1.4.6.6.3-.7.2-1.6-.1-1.9-.3-.4-.6.2-.5 1.3"/>
-              <path fill="#FFBFBF" fillOpacity=".5" d="M971.1 520.6c0 1.1.3 1.4.6.6.3-.7.2-1.6-.1-1.9-.3-.4-.6.2-.5 1.3"/>
-            </svg>
-          </div>
-          <span className="text-2xl font-black tracking-tighter uppercase italic">{content.hero.title}</span>
-        </div>
-
-        <div className="flex items-center gap-4">
-          <button onClick={toggleLang} className="flex items-center gap-2 px-4 py-2 rounded-full border border-white/20 hover:bg-white hover:text-black transition-all text-xs font-bold uppercase tracking-widest">
-            <IconGlobe /> {lang === "id" ? "Bahasa" : "English"}
-          </button>
+import React, { useState, useEffect, useRef } from "react"; 
+import { motion, AnimatePresence } from "framer-motion"; 
+import LoadingScreen from "./components/LoadingScreen"; 
+ 
+// ✅ DATA 
+import { DATA_CONTENT } from "./data/content"; 
+ 
+// ✅ SECTIONS 
+import HeroSection from "./sections/HeroSection"; 
+import TraditionalSection from "./sections/TraditionalSection"; 
+import NatureSliderSection from "./sections/NatureSliderSection"; 
+import ContemporaryScroll from "./sections/ContemporaryScroll"; 
+import CulinarySection from "./sections/CulinarySection"; 
+import FooterSection from "./sections/FooterSection"; 
+import DetailModal from "./sections/DetailModal"; 
+ 
+// --- ICONS --- 
+const IconChevronRight = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>; 
+const IconX = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>; 
+const IconGlobe = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>; 
+const IconInstagram = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>; 
+const IconTwitter = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-12.7 14.6-5.5-4.6 1.1-6.9 1.1-6.9a6 6 0 0 1-.8-8c2.4 1.1 4.5 2.6 6 4.8a6.6 6.6 0 0 1 9.8-1.5z"/></svg>; 
+const IconYoutube = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17"/><path d="m10 15 5-3-5-3z"/></svg>; 
+ 
+export default function IndoCulture() { 
+  const [isLoading, setIsLoading] = useState(true); 
+  const [lang, setLang] = useState("id"); 
+  const [showModal, setShowModal] = useState(false); 
+  const [modalContent, setModalContent] = useState({}); 
+  const [isScrolled, setIsScrolled] = useState(false); 
+ 
+  const heroRef = useRef(); 
+  const traditionalRef = useRef(); 
+  const natureRef = useRef(); 
+  const culinaryRef = useRef(); 
+ 
+  const content = DATA_CONTENT[lang]; 
+ 
+  useEffect(() => { 
+    const handleScroll = () => { setIsScrolled(window.scrollY > 50); }; 
+    window.addEventListener("scroll", handleScroll); 
+    return () => window.removeEventListener("scroll", handleScroll); 
+  }, []); 
+ 
+  const toggleLang = () => { setLang(lang === "id" ? "en" : "id"); }; 
+  const openModal = (item) => { setModalContent(item); setShowModal(true); }; 
+  
+  const scrollToSection = (ref) => { 
+    ref.current?.scrollIntoView({ behavior: "smooth" }); 
+  }; 
+ 
+  if (isLoading) { 
+    return <LoadingScreen onDone={() => setIsLoading(false)} />; 
+  } 
+ 
+  return ( 
+    <div className="bg-black text-white selection:bg-yellow-400 selection:text-black font-sans relative"> 
+        
+      {/* NAVBAR FIXED */} 
+      {/* Penjelasan Perbaikan Lebar: Tambahkan w-full dan box-border */}
+      <nav className={`fixed top-0 left-0 right-0 w-full z-[100] box-border transition-all duration-500 px-4 md:px-12 py-4 flex justify-between items-center ${ 
+        isScrolled ? "bg-black/90 backdrop-blur-xl border-b border-white/10" : "bg-gradient-to-b from-black/60 to-transparent" 
+      }`}> 
+        
+        {/* GRUP KIRI: Logo & Judul */} 
+        {/* Penjelasan Perbaikan Lebar: Gunakan flex-1 dan min-w-0 agar judul mau menciut */}
+        <div  
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} 
+          className="flex items-center gap-2 md:gap-4 group cursor-pointer flex-1 min-w-0" 
+        > 
+          <div className="w-10 h-10 md:w-12 md:h-12 flex-shrink-0 flex items-center justify-center transition-transform duration-500 group-hover:scale-110"> 
+            <svg xmlns="http://www.w3.org/2000/svg" version="1.0" viewBox="0 0 1080 1080" className="w-full h-full"> 
+               <circle cx="540" cy="540" r="500" fill="#BF0000" />
+               <path d="M300 300h480v480H300z" fill="white" opacity="0.2"/>
+            </svg> 
+          </div> 
           
-          
-        </div>
-      </nav>
-
-      {/* HERO SECTION */}
-      <HeroSection
-        reference={heroRef}
-        content={content}
-        onCta={() => scrollToSection(traditionalRef)}
-      />
-
-      {/* TRADITIONAL SECTION */}
-      <TraditionalSection
-        reference={traditionalRef}
-        sectionData={content.sections.traditional}
-        onOpenModal={openModal}
-        IconChevronRight={IconChevronRight}
-      />
-
-      {/* NATURE SLIDER SECTION */}
-      <NatureSliderSection
-        sectionData={content.sections.nature}
-        reference={natureRef}
-        ui={content.ui}
-        onOpenModal={openModal}
-      />
-
-      {/* CONTEMPORARY SECTION */}
-      <ContemporaryScroll 
-        sectionData={content.sections.contemporary} 
-        onOpenModal={openModal} 
-      />
-
-      {/* CULINARY SECTION */}
-      <CulinarySection
-        reference={culinaryRef}
-        sectionData={content.sections.culinary}
-        onOpenModal={openModal}
-        IconChevronRight={IconChevronRight}
-      />
-
-      {/* FOOTER */}
-      <FooterSection
-        content={content}
-        IconInstagram={IconInstagram}
-        IconTwitter={IconTwitter}
-        IconYoutube={IconYoutube}
-      />
-
-      {/* MODAL */}
-      <AnimatePresence>
-        {showModal && (
-          <DetailModal
-            content={content}
-            modalContent={modalContent}
-            onClose={() => setShowModal(false)}
-            IconX={IconX}
-          />
-        )}
-      </AnimatePresence>
-    </div>
-  );
+          {/* JUDUL: Gunakan truncate agar jika teks terlalu panjang, ia dipotong (...) dan tidak merusak lebar navbar */}
+          <span className="text-sm sm:text-lg md:text-2xl font-black tracking-tighter uppercase italic truncate"> 
+            {content.hero.title} 
+          </span> 
+        </div> 
+ 
+        {/* GRUP KANAN: Tombol Bahasa */} 
+        {/* Penjelasan Perbaikan Lebar: flex-shrink-0 mengunci ukuran tombol agar tidak keluar layar */}
+        <div className="flex items-center flex-shrink-0 ml-4"> 
+          <button  
+            onClick={toggleLang}  
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-white/20 bg-white/5 hover:bg-white hover:text-black transition-all text-[10px] md:text-xs font-bold uppercase tracking-widest" 
+          > 
+            <IconGlobe /> 
+            <span className="whitespace-nowrap">{lang === "id" ? "ID" : "EN"}</span> 
+          </button> 
+        </div> 
+      </nav> 
+ 
+      {/* SECTIONS */} 
+      <HeroSection reference={heroRef} content={content} onCta={() => scrollToSection(traditionalRef)} /> 
+      <TraditionalSection reference={traditionalRef} sectionData={content.sections.traditional} onOpenModal={openModal} IconChevronRight={IconChevronRight} /> 
+      <NatureSliderSection sectionData={content.sections.nature} reference={natureRef} ui={content.ui} onOpenModal={openModal} /> 
+      <ContemporaryScroll sectionData={content.sections.contemporary} onOpenModal={openModal} /> 
+      <CulinarySection reference={culinaryRef} sectionData={content.sections.culinary} onOpenModal={openModal} IconChevronRight={IconChevronRight} /> 
+      <FooterSection content={content} IconInstagram={IconInstagram} IconTwitter={IconTwitter} IconYoutube={IconYoutube} /> 
+ 
+      <AnimatePresence> 
+        {showModal && ( 
+          <DetailModal content={content} modalContent={modalContent} onClose={() => setShowModal(false)} IconX={IconX} /> 
+        )} 
+      </AnimatePresence> 
+    </div> 
+  ); 
 }

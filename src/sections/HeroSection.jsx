@@ -1,40 +1,41 @@
 import React, { useEffect, useState, useRef } from "react";
 
 export default function HeroSection({ reference, content, onCta }) {
-  const [textX, setTextX] = useState(window.innerWidth);
+  const [textX, setTextX] = useState(0);
   const [opacity, setOpacity] = useState(0);
-  const sectionRef = useRef(null);
 
   useEffect(() => {
+    setTextX(window.innerWidth);
+
     const handleScroll = () => {
       const scrollY = window.scrollY;
       const windowHeight = window.innerHeight;
+      const screenWidth = window.innerWidth;
       
-      // Hitung progress scroll di dalam hero (0 sampai 1)
-      // 0 = paling atas, 1 = saat hero tepat akan hilang dari layar
       const progress = Math.min(scrollY / windowHeight, 1);
 
       if (progress <= 1) {
-        const screenWidth = window.innerWidth;
-        
-        // LOGIKA PERGERAKAN:
-        // Start: screenWidth (di kanan luar)
-        // End: -screenWidth * 1.5 (di kiri luar agar teks benar-benar habis)
-        const targetX = screenWidth - (progress * (screenWidth * 2.5));
+        const movementRange = screenWidth * 2.5;
+        const targetX = screenWidth - (progress * movementRange);
         
         setTextX(targetX);
-
-        // LOGIKA MUNCUL:
-        // Muncul cepat di awal (0.1 progress), lalu tetap ada sampai hero habis
         setOpacity(progress > 0.05 ? 0.6 : 0);
       }
     };
 
+    const handleResize = () => {
+      if (window.scrollY === 0) setTextX(window.innerWidth);
+      handleScroll();
+    };
+
     window.addEventListener("scroll", handleScroll);
-    // Set posisi awal saat load
+    window.addEventListener("resize", handleResize);
     handleScroll();
 
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleResize);
+    };
   }, []);
 
   return (
@@ -55,32 +56,45 @@ export default function HeroSection({ reference, content, onCta }) {
       {/* MAIN CONTENT */}
       <div className="relative z-[2] min-h-screen flex flex-col items-center justify-center">
         <div className="max-w-5xl px-6 md:px-12 text-center">
-          <h1 className="text-6xl md:text-9xl font-black tracking-tighter uppercase italic mb-6">
+          <h1 className="text-5xl md:text-9xl font-black tracking-tighter uppercase italic mb-6 leading-none">
             {content.hero.title}
           </h1>
 
-          <p className="text-lg md:text-2xl font-light text-gray-300 mb-10 max-w-3xl mx-auto">
+          <p className="text-base md:text-2xl font-light text-gray-300 mb-10 max-w-2xl mx-auto">
             {content.hero.description}
           </p>
 
+          {/* BUTTON DENGAN PADDING KHUSUS AGAR TIDAK DEMPET */}
           <button
             onClick={onCta}
-            className="px-10 py-4 rounded-full bg-white text-black font-black uppercase tracking-widest hover:bg-red-600 hover:text-white transition-all mb-16"
+            className={`
+              rounded-full bg-white text-black font-black uppercase tracking-widest 
+              hover:bg-red-600 hover:text-white transition-all 
+              text-sm md:text-base
+              /* Margin bottom untuk memberi jarak ke marquee */
+              mb-20 
+              /* Padding tombol sesuai permintaan Anda */
+              px-[20px] py-[10px] md:px-[10px] md:py-[5px]
+            `}
           >
             {content.hero.cta}
           </button>
         </div>
 
-        {/* TEKS PARALLAX (BUKAN LOOPING) */}
-        <div className="absolute bottom-20 w-full overflow-hidden pointer-events-none">
+        {/* TEKS PARALLAX - KOMPOSISI UKURAN BARU */}
+        <div className="absolute bottom-10 md:bottom-20 w-full overflow-hidden pointer-events-none">
           <h2
-            className="whitespace-nowrap font-black italic tracking-tighter text-white uppercase"
+            className={`
+              whitespace-nowrap font-black italic tracking-tighter text-white uppercase
+              text-[30px]      /* Ukuran Mobile sesuai komposisi Anda */
+              md:text-[60px]   /* Ukuran Tablet sesuai komposisi Anda */
+              lg:text-[80px]   /* Ukuran Desktop sesuai komposisi Anda */
+            `}
             style={{
-              fontSize: "75px",
               transform: `translateX(${textX}px)`,
               opacity: opacity,
               willChange: "transform",
-              transition: "opacity 0.4s ease-out", // Hanya opacity yang pakai transisi agar gerakan scroll tetap presisi
+              transition: "opacity 0.4s ease-out",
             }}
           >
             {content.hero.marquee}
