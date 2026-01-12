@@ -14,7 +14,7 @@ import CulinarySection from "./sections/CulinarySection";
 import FooterSection from "./sections/FooterSection"; 
 import DetailModal from "./sections/DetailModal"; 
  
-// --- ICONS --- 
+// --- ICONS (Tetap Sama) --- 
 const IconChevronRight = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>; 
 const IconX = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>; 
 const IconGlobe = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>; 
@@ -54,52 +54,49 @@ export default function IndoCulture() {
   } 
  
   return ( 
-    <div className="bg-black text-white selection:bg-yellow-400 selection:text-black font-sans relative"> 
+    /* PENTING: 
+      1. JANGAN gunakan 'overflow-x-hidden' di sini karena akan mematikan 'position: sticky' 
+         pada ContemporaryScroll.
+      2. Biarkan 'overflow-x: clip' diatur melalui file index.css pada tag html/body saja.
+    */
+    <div className="bg-black text-white selection:bg-yellow-400 selection:text-black font-sans relative w-full"> 
         
       {/* NAVBAR FIXED */} 
-      {/* Penjelasan Perbaikan Lebar: Tambahkan w-full dan box-border */}
       <nav className={`fixed top-0 left-0 right-0 w-full z-[100] box-border transition-all duration-500 px-4 md:px-12 py-4 flex justify-between items-center ${ 
         isScrolled ? "bg-black/90 backdrop-blur-xl border-b border-white/10" : "bg-gradient-to-b from-black/60 to-transparent" 
       }`}> 
-        
-        {/* GRUP KIRI: Logo & Judul */} 
-        {/* Penjelasan Perbaikan Lebar: Gunakan flex-1 dan min-w-0 agar judul mau menciut */}
-        <div  
-          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} 
-          className="flex items-center gap-2 md:gap-4 group cursor-pointer flex-1 min-w-0" 
-        > 
-          <div className="w-10 h-10 md:w-12 md:h-12 flex-shrink-0 flex items-center justify-center transition-transform duration-500 group-hover:scale-110"> 
-            <svg xmlns="http://www.w3.org/2000/svg" version="1.0" viewBox="0 0 1080 1080" className="w-full h-full"> 
+        <div onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="flex items-center gap-2 md:gap-4 group cursor-pointer flex-1 min-w-0"> 
+          <div className="w-8 h-8 md:w-10 md:h-10 flex-shrink-0"> 
+             <svg xmlns="http://www.w3.org/2000/svg" version="1.0" viewBox="0 0 1080 1080" className="w-full h-full"> 
                <circle cx="540" cy="540" r="500" fill="#BF0000" />
                <path d="M300 300h480v480H300z" fill="white" opacity="0.2"/>
             </svg> 
           </div> 
-          
-          {/* JUDUL: Gunakan truncate agar jika teks terlalu panjang, ia dipotong (...) dan tidak merusak lebar navbar */}
           <span className="text-sm sm:text-lg md:text-2xl font-black tracking-tighter uppercase italic truncate"> 
             {content.hero.title} 
           </span> 
         </div> 
  
-        {/* GRUP KANAN: Tombol Bahasa */} 
-        {/* Penjelasan Perbaikan Lebar: flex-shrink-0 mengunci ukuran tombol agar tidak keluar layar */}
         <div className="flex items-center flex-shrink-0 ml-4"> 
-          <button  
-            onClick={toggleLang}  
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-white/20 bg-white/5 hover:bg-white hover:text-black transition-all text-[10px] md:text-xs font-bold uppercase tracking-widest" 
-          > 
+          <button onClick={toggleLang} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-white/20 bg-white/5 hover:bg-white hover:text-black transition-all text-[10px] md:text-xs font-bold uppercase tracking-widest"> 
             <IconGlobe /> 
             <span className="whitespace-nowrap">{lang === "id" ? "ID" : "EN"}</span> 
           </button> 
         </div> 
       </nav> 
  
-      {/* SECTIONS */} 
+      {/* JANGAN gunakan <main className="overflow-x-hidden"> di sini. 
+         Langsung panggil section agar sticky di ContemporaryScroll berjalan lancar.
+      */} 
       <HeroSection reference={heroRef} content={content} onCta={() => scrollToSection(traditionalRef)} /> 
       <TraditionalSection reference={traditionalRef} sectionData={content.sections.traditional} onOpenModal={openModal} IconChevronRight={IconChevronRight} /> 
       <NatureSliderSection sectionData={content.sections.nature} reference={natureRef} ui={content.ui} onOpenModal={openModal} /> 
+      
+      {/* SECTION STICKY */}
       <ContemporaryScroll sectionData={content.sections.contemporary} onOpenModal={openModal} /> 
+      
       <CulinarySection reference={culinaryRef} sectionData={content.sections.culinary} onOpenModal={openModal} IconChevronRight={IconChevronRight} /> 
+
       <FooterSection content={content} IconInstagram={IconInstagram} IconTwitter={IconTwitter} IconYoutube={IconYoutube} /> 
  
       <AnimatePresence> 
