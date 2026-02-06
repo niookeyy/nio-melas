@@ -1,12 +1,28 @@
-import React from 'react';
+import React, { useState } from 'react';
+import Label from './Label';
 
 const Certificates = ({ onEnter, onLeave }) => {
+  const [selectedImage, setSelectedImage] = useState(null);
+
   const certs = [
-    { category: 'Business Marketing', title: 'Global Business Marketing Case Competition', issuer: '2023' },
-    { category: 'Data Science', title: 'ASEAN Data Science Explorer', issuer: 'ASEAN Foundation' },
-    { category: 'Data Science', title: 'Data Analytics Training', issuer: 'Digital Talent Scholarship' },
-    { category: 'Web Development', title: 'SIJA Competency Certificate', issuer: 'SMK Telkom Sidoarjo' },
-    { category: 'Data Analysis', title: 'Google Data Analytics Professional', issuer: 'Coursera' }
+    { 
+      category: 'Finalist', 
+      title: 'Finalist Tristanio Putra A (SKOMDA-NERD)', 
+      issuer: '2023',
+      img: '/assets/finalist-skomda.png' // Ganti dengan path aslimu
+    },
+    { 
+      category: 'Web Development', 
+      title: 'Sertifikat Kompetisi Website Media Cloud', 
+      issuer: 'Media Cloud Indonesia',
+      img: '/assets/media-cloud.png' 
+    },
+    { 
+  category: 'Data Science', 
+  title: 'ASEAN Data Science Explorers 2024 Enablement Session', 
+  issuer: 'SAP & ASEAN Foundation',
+  img: '/assets/Sertifikat Tristanio Putra Armanto.png' // Pastikan file PDF sudah dikonversi ke PNG dengan nama ini
+}
   ];
 
   return (
@@ -20,7 +36,9 @@ const Certificates = ({ onEnter, onLeave }) => {
               key={index} 
               className="cert-card"
               onMouseEnter={onEnter}
-              onMouseLeave={onLeave}
+              onLeave={onLeave}
+              onClick={() => setSelectedImage(cert.img)} // Trigger Pop-up
+              style={{ cursor: 'pointer' }}
             >
               <span className="cert-cat">{cert.category}</span>
               <h3>{cert.title}</h3>
@@ -29,6 +47,13 @@ const Certificates = ({ onEnter, onLeave }) => {
           ))}
         </div>
       </div>
+
+      {/* Tampilkan Pop-up Label */}
+      <Label 
+        isOpen={!!selectedImage} 
+        imageSrc={selectedImage} 
+        onClose={() => setSelectedImage(null)} 
+      />
     </section>
   );
 };
