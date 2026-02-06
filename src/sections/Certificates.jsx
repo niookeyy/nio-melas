@@ -1,28 +1,33 @@
 import React, { useState } from 'react';
 import Label from './Label';
 
+// IMPORT GAMBAR (Ini kunci agar gambar tidak pecah/putih)
+import sapCert from '../assets/Sertifikat Tristanio Putra Armanto.png';
+import finalistCert from '../assets/finalist-skomda.png';
+import mediaCloudCert from '../assets/media-cloud.png';
+
 const Certificates = ({ onEnter, onLeave }) => {
   const [selectedImage, setSelectedImage] = useState(null);
 
   const certs = [
     { 
+      category: 'Data Science', 
+      title: 'ASEAN Data Science Explorers 2024 Enablement Session', 
+      issuer: 'SAP & ASEAN Foundation',
+      img: sapCert 
+    },
+    { 
       category: 'Finalist', 
       title: 'Finalist Tristanio Putra A (SKOMDA-NERD)', 
-      issuer: '2023',
-      img: '/assets/finalist-skomda.png' // Ganti dengan path aslimu
+      issuer: 'Skomda-Nerd Team 2023',
+      img: finalistCert 
     },
     { 
       category: 'Web Development', 
       title: 'Sertifikat Kompetisi Website Media Cloud', 
       issuer: 'Media Cloud Indonesia',
-      img: '/assets/media-cloud.png' 
-    },
-    { 
-  category: 'Data Science', 
-  title: 'ASEAN Data Science Explorers 2024 Enablement Session', 
-  issuer: 'SAP & ASEAN Foundation',
-  img: '/assets/Sertifikat Tristanio Putra Armanto.png' // Pastikan file PDF sudah dikonversi ke PNG dengan nama ini
-}
+      img: mediaCloudCert 
+    }
   ];
 
   return (
@@ -37,7 +42,7 @@ const Certificates = ({ onEnter, onLeave }) => {
               className="cert-card"
               onMouseEnter={onEnter}
               onLeave={onLeave}
-              onClick={() => setSelectedImage(cert.img)} // Trigger Pop-up
+              onClick={() => setSelectedImage(cert.img)}
               style={{ cursor: 'pointer' }}
             >
               <span className="cert-cat">{cert.category}</span>
