@@ -81,21 +81,26 @@ const Certificates = ({ onEnter, onLeave }) => {
           margin-top: 40px;
         }
         .view-more-btn {
-          padding: 12px 30px;
-          border: 1px solid #dc143c;
-          color: white;
-          text-decoration: none;
-          font-size: 0.9rem;
-          letter-spacing: 2px;
-          text-transform: uppercase;
-          transition: all 0.3s ease;
-          background: transparent;
-        }
-        .view-more-btn:hover {
-          background: #dc143c;
-          color: white;
-          box-shadow: 0 0 20px rgba(220, 20, 60, 0.4);
-        }
+  padding: 12px 30px;
+  /* Tambahkan background semi-transparan agar teks lebih menonjol dari background utama */
+  background: rgba(220, 20, 60, 0.05); 
+  border: 1px solid #dc143c;
+  color: #dc143c; /* Pastikan warna putih solid */
+  text-decoration: none;
+  font-size: 0.9rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+  display: inline-block; /* Memastikan padding bekerja dengan baik */
+  opacity: 1; /* Pastikan tidak ada transparansi pada tombol utama */
+}
+
+.view-more-btn:hover {
+  background: #dc143c;
+  color: white;
+  box-shadow: 0 0 20px rgba(220, 20, 60, 0.4);
+  transform: translateY(-2px); /* Tambahan sedikit efek angkat saat hover */
+}
       `}</style>
     </section>
   );
