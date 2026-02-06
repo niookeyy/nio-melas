@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Label from './Label';
 
-// IMPORT GAMBAR (Ini kunci agar gambar tidak pecah/putih)
+// IMPORT GAMBAR
 import sapCert from '../assets/Sertifikat Tristanio Putra Armanto.png';
 import finalistCert from '../assets/finalist-skomda.png';
 import mediaCloudCert from '../assets/media-cloud.png';
@@ -35,6 +35,7 @@ const Certificates = ({ onEnter, onLeave }) => {
       <div className="section-number">04</div>
       <div className="container">
         <h2 className="section-title">Certifications</h2>
+        
         <div className="certificates-grid">
           {certs.map((cert, index) => (
             <div 
@@ -51,14 +52,51 @@ const Certificates = ({ onEnter, onLeave }) => {
             </div>
           ))}
         </div>
+
+        {/* BUTTON TAMBAHAN */}
+        <div className="view-more-container">
+          <a 
+            href="https://drive.google.com/drive/folders/1R-QB4y15pPNsaYA6ZQujuuUdGp78RxLY?usp=sharing" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="view-more-btn"
+            onMouseEnter={onEnter}
+            onLeave={onLeave}
+          >
+            View All Certificates
+          </a>
+        </div>
       </div>
 
-      {/* Tampilkan Pop-up Label */}
       <Label 
         isOpen={!!selectedImage} 
         imageSrc={selectedImage} 
         onClose={() => setSelectedImage(null)} 
       />
+
+      <style jsx>{`
+        .view-more-container {
+          display: flex;
+          justify-content: center;
+          margin-top: 40px;
+        }
+        .view-more-btn {
+          padding: 12px 30px;
+          border: 1px solid #dc143c;
+          color: white;
+          text-decoration: none;
+          font-size: 0.9rem;
+          letter-spacing: 2px;
+          text-transform: uppercase;
+          transition: all 0.3s ease;
+          background: transparent;
+        }
+        .view-more-btn:hover {
+          background: #dc143c;
+          color: white;
+          box-shadow: 0 0 20px rgba(220, 20, 60, 0.4);
+        }
+      `}</style>
     </section>
   );
 };
