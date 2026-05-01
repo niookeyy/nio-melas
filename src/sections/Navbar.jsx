@@ -1,52 +1,44 @@
-import React from 'react';
+import React from "react";
+import { Menu, X } from "lucide-react";
 
-const Navbar = ({ t, activeSection, menuOpen, setMenuOpen, lang, setLang }) => {
-  // Fungsi untuk mengganti bahasa saat tombol diklik
-  const toggleLanguage = () => {
-    setLang(lang === 'en' ? 'id' : 'en');
-  };
-
+const Navbar = ({ t, activeSection, menuOpen, setMenuOpen }) => {
   const navItems = [
-    { id: 'home', label: t.nav[0] },
-    { id: 'about', label: t.nav[1] },
-    { id: 'skills', label: t.nav[2] },
-    { id: 'projects', label: t.nav[3] },
-    { id: 'certificates', label: t.nav[4] },
-    { id: 'contact', label: t.nav[5] },
+    { id: "home", label: t.nav[0] },
+    { id: "about", label: t.nav[1] },
+    { id: "skills", label: t.nav[2] },
+    { id: "projects", label: t.nav[3] },
+    { id: "certificates", label: t.nav[4] },
+    { id: "contact", label: t.nav[5] },
   ];
 
   return (
     <nav className="nav">
       <div className="nav-container">
-        <a href="#home" className="logo">
-          TPA<span className="accent">.</span>
+        <a href="#home" className="nav-brand" onClick={() => setMenuOpen(false)}>
+          <span>Tristanio</span>
+          <strong>Armanto</strong>
         </a>
 
-        <div className={`nav-links ${menuOpen ? 'open' : ''}`}>
-          {navItems.map((item, index) => (
+        <div className={`nav-links ${menuOpen ? "open" : ""}`}>
+          {navItems.map((item) => (
             <a
               key={item.id}
               href={`#${item.id}`}
-              className={`nav-link ${activeSection === item.id ? 'active' : ''}`}
+              className={activeSection === item.id ? "active" : ""}
               onClick={() => setMenuOpen(false)}
             >
-              <span className="nav-num">0{index + 1}</span>
               {item.label}
             </a>
           ))}
-          
-          {/* Tombol Language Switcher */}
-          <button className="lang-toggle-btn" onClick={toggleLanguage}>
-            {lang === 'en' ? 'ID 🇮🇩' : 'EN 🇺🇸'}
-          </button>
         </div>
 
-        <button 
-          className="menu-toggle" 
+        <button
+          type="button"
+          className="nav-toggle"
           onClick={() => setMenuOpen(!menuOpen)}
-          aria-label="Toggle menu"
+          aria-label="Toggle navigation menu"
         >
-          <div className={`hamburger ${menuOpen ? 'open' : ''}`}></div>
+          {menuOpen ? <X size={22} /> : <Menu size={22} />}
         </button>
       </div>
     </nav>

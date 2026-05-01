@@ -1,21 +1,17 @@
-import React from 'react';
+import React from "react";
 
 const Footer = ({ t }) => {
   return (
     <footer className="footer">
-      <div className="footer-content">
-        <div className="footer-logo">
-          TPA<span className="accent">.</span>
+      <div className="container footer-container">
+        <div>
+          <h3>{t.footer.name}</h3>
+          <p>{t.footer.role}</p>
         </div>
-        <div className="footer-info">
-          <p>© {new Date().getFullYear()} Tristanio Putra Armanto</p>
-          <div className="footer-socials">
-            <ul>
-              <li><a href="https://www.linkedin.com/in/tristanio-armanto-14939b299?lipi=urn%3Ali%3Apage%3Ad_flagship3_profile_view_base_contact_details%3BMXP0C%2BXeRY2ecojBpTS8Yg%3D%3D" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
-              <li><a href="https://github.com/niookeyy" target="_blank" rel="noopener noreferrer">GitHub</a></li>
-            </ul>
-          </div>
-        </div>
+
+        <p className="footer-copy">
+          © {new Date().getFullYear()} Tristanio Armanto. Built with React.
+        </p>
       </div>
     </footer>
   );
