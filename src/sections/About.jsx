@@ -1,10 +1,6 @@
-import React, { useRef, useState } from "react";
-import { motion } from "framer-motion";
-import { Sparkles, Target, TrendingUp } from "lucide-react";
+import React, { useRef, useState, useEffect } from "react";
 import gsap from "gsap";
 import aboutPhoto from "../assets/foto-saya.jpeg";
-
-const icons = [Sparkles, Target, TrendingUp];
 
 const About = ({ t }) => {
   const cardRef = useRef(null);
@@ -13,6 +9,47 @@ const About = ({ t }) => {
   const [dragging, setDragging] = useState(false);
   const [rope, setRope] = useState({ x: 0, y: 0 });
 
+  /* ================= LANYARD SWING ANIMATION ================= */
+  useEffect(() => {
+    gsap.set(cardRef.current, {
+      transformOrigin: "50% -80px",
+      rotate: -18,
+      y: -20,
+      opacity: 0,
+    });
+
+    const tl = gsap.timeline({ delay: 0.4 });
+
+    tl.to(cardRef.current, {
+      opacity: 1,
+      y: 0,
+      rotate: 16,
+      duration: 0.8,
+      ease: "power3.out",
+    })
+      .to(cardRef.current, {
+        rotate: -10,
+        duration: 0.6,
+        ease: "power2.inOut",
+      })
+      .to(cardRef.current, {
+        rotate: 6,
+        duration: 0.5,
+        ease: "power2.inOut",
+      })
+      .to(cardRef.current, {
+        rotate: -3,
+        duration: 0.4,
+        ease: "power2.inOut",
+      })
+      .to(cardRef.current, {
+        rotate: 0,
+        duration: 0.6,
+        ease: "elastic.out(1, 0.45)",
+      });
+  }, []);
+
+  /* ================= DRAG ================= */
   const handlePointerDown = (e) => {
     setDragging(true);
 
@@ -38,7 +75,7 @@ const About = ({ t }) => {
       x,
       y,
       rotate,
-      duration: 0.16,
+      duration: 0.15,
       ease: "power2.out",
     });
   };
@@ -55,7 +92,7 @@ const About = ({ t }) => {
       x: 0,
       y: 0,
       rotate: 0,
-      duration: 1.15,
+      duration: 1.1,
       ease: "elastic.out(1, 0.45)",
     });
   };
@@ -65,25 +102,12 @@ const About = ({ t }) => {
       <div className="section-number">01</div>
 
       <div className="container about-container">
-        <motion.div
-          className="about-heading"
-          initial={{ opacity: 0, y: 36 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-120px" }}
-          transition={{ duration: 0.6 }}
-        >
-          <span className="section-label">Introduction</span>
-          <h2 className="section-title">{t.about.title}</h2>
-        </motion.div>
-
         <div className="about-grid-new">
-          <motion.div
-            className="about-photo-area"
-            initial={{ opacity: 0, y: 36 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-120px" }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-          >
+
+          {/* LEFT */}
+          <div className="about-photo-area">
+
+            {/* FLEXIBLE ROPE */}
             <svg className="lanyard-svg" viewBox="0 0 200 300">
               <path
                 d={`
@@ -91,24 +115,14 @@ const About = ({ t }) => {
                   Q ${100 + rope.x * 0.45} ${90 + rope.y * 0.5},
                     ${100 + rope.x * 0.8} ${205 + rope.y * 0.55}
                 `}
-                stroke="rgba(91, 92, 246, 0.5)"
+                stroke="rgba(91,92,246,0.5)"
                 strokeWidth="4"
-                fill="none"
-                strokeLinecap="round"
-              />
-              <path
-                d={`
-                  M100 0
-                  Q ${100 + rope.x * 0.35} ${86 + rope.y * 0.42},
-                    ${100 + rope.x * 0.65} ${205 + rope.y * 0.5}
-                `}
-                stroke="rgba(59, 130, 246, 0.18)"
-                strokeWidth="10"
                 fill="none"
                 strokeLinecap="round"
               />
             </svg>
 
+            {/* CARD */}
             <div
               ref={cardRef}
               className={`about-photo-card ${dragging ? "dragging" : ""}`}
@@ -126,19 +140,16 @@ const About = ({ t }) => {
                 <span>Frontend Developer</span>
               </div>
             </div>
-          </motion.div>
+          </div>
 
-          <motion.div
-            className="about-copy"
-            initial={{ opacity: 0, y: 36 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-120px" }}
-            transition={{ duration: 0.6, delay: 0.15 }}
-          >
+          {/* RIGHT */}
+          <div className="about-copy">
+            <h2 className="section-title">{t.about.title}</h2>
             <p className="about-lead">{t.about.lead}</p>
             <p>{t.about.p1}</p>
             <p>{t.about.p2}</p>
-          </motion.div>
+          </div>
+
         </div>
       </div>
     </section>
