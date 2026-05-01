@@ -535,12 +535,28 @@ section {
 
 /* ================= ABOUT ================= */
 
+/* ================= ABOUT ================= */
+
+.about {
+  background: rgba(255, 255, 255, 0.52);
+}
+
+.about-container {
+  position: relative;
+  z-index: 2;
+}
+
+.about-section-head {
+  position: relative;
+  z-index: 2;
+  margin-bottom: 46px;
+}
+
 .about-grid-new {
   display: grid;
   grid-template-columns: 0.9fr 1.1fr;
   gap: 54px;
   align-items: center;
-  margin-top: 46px;
 }
 
 .about-photo-area {
@@ -554,11 +570,16 @@ section {
 .lanyard-svg {
   position: absolute;
   top: 0;
-  width: 200px;
-  height: 260px;
   left: 50%;
+  width: 220px;
+  height: 300px;
   transform: translateX(-50%);
   pointer-events: none;
+  z-index: 1;
+}
+
+.lanyard-svg path {
+  will-change: d;
 }
 
 /* CARD */
@@ -568,28 +589,60 @@ section {
   width: min(320px, 90vw);
   padding: 16px 16px 22px;
   border-radius: 28px;
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.85);
   border: 1px solid var(--border);
-  box-shadow: 0 30px 90px rgba(17, 24, 39, 0.15);
+  box-shadow: 0 20px 80px rgba(0, 0, 0, 0.15);
   backdrop-filter: blur(18px);
+
   cursor: grab;
-  transform-origin: 50% -80px;
+  transform-origin: top center;
   touch-action: none;
   user-select: none;
+  will-change: transform, box-shadow;
+
+  transition: box-shadow 0.3s ease, transform 0.2s ease;
 }
 
 .about-photo-card.dragging {
   cursor: grabbing;
+  box-shadow:
+    0 55px 130px rgba(17, 24, 39, 0.32),
+    0 0 55px rgba(91, 92, 246, 0.28);
 }
 
-.photo-hole {
+.about-photo-card * {
+  pointer-events: none;
+}
+
+.about-photo-card::after {
+  content: "";
+  position: absolute;
+  inset: 16px;
+  border-radius: 22px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.28),
+    transparent 45%
+  );
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.about-photo-card.dragging::after {
+  opacity: 1;
+}
+
+/* HOLE */
+.about-photo-hole {
   width: 42px;
   height: 12px;
   margin: 0 auto 14px;
   border-radius: 999px;
-  background: rgba(17, 24, 39, 0.15);
+  background: rgba(0, 0, 0, 0.2);
 }
 
+/* IMAGE */
 .about-photo-card img {
   width: 100%;
   aspect-ratio: 4 / 5;
@@ -600,9 +653,10 @@ section {
   -webkit-user-drag: none;
 }
 
+/* INFO */
 .about-photo-info {
-  padding-top: 16px;
   text-align: center;
+  padding-top: 16px;
 }
 
 .about-photo-info strong {
@@ -614,20 +668,57 @@ section {
   color: var(--primary);
 }
 
-/* RIGHT TEXT */
+/* TEXT */
 .about-copy {
+  align-self: center;
   padding: 34px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.68);
+  box-shadow: 0 20px 60px rgba(17, 24, 39, 0.06);
+  backdrop-filter: blur(18px);
+}
+
+.about-copy p {
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.85;
+}
+
+.about-copy p + p {
+  margin-top: 18px;
 }
 
 .about-lead {
+  color: var(--text) !important;
+  font-size: 1.35rem !important;
   font-weight: 800;
-  font-size: 1.3rem;
-  margin-bottom: 14px;
+  line-height: 1.55 !important;
+  margin-bottom: 18px;
 }
 
+/* RESPONSIVE */
 @media (max-width: 980px) {
   .about-grid-new {
     grid-template-columns: 1fr;
+  }
+
+  .about-photo-area {
+    min-height: 560px;
+  }
+}
+
+@media (max-width: 640px) {
+  .about-photo-area {
+    min-height: 500px;
+  }
+
+  .about-photo-card {
+    width: min(300px, 90vw);
+  }
+
+  .about-copy {
+    padding: 24px;
   }
 }
 
