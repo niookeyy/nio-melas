@@ -75,6 +75,15 @@ export const content = {
           demo: "",
           github: "https://github.com/niookeyy/nio_Apprentice_Jaghos",
         },
+        {
+          num: "03",
+          title: "Simple Todo List App",
+          desc: "A simple todo list application to help manage and track daily tasks efficiently.",
+          tags: ["Flutter", "Mobile App"],
+          image: "/src/assets/gambar-Flutter.jpeg",
+          demo: "#",
+          github: "https://github.com/niookeyy/NioNotes.git",
+        }
       ],
     },
 
