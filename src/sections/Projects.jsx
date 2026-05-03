@@ -4,12 +4,13 @@ import { ArrowUpRight, Github } from "lucide-react";
 
 import wiseWallet from "../assets/wise-wallet.png";
 import domainSearch from "../assets/domain-search.png";
-import portfolioImage from "../assets/Foto-saya-hero.jpeg";
+import flutterTodo from "../assets/gambar-Flutter.png";
+
 
 const imageMap = {
   "wise-wallet.png": wiseWallet,
   "domain-search.png": domainSearch,
-  // "Foto-saya-hero.jpeg": portfolioImage,
+  "gambar-Flutter.png": flutterTodo,
 };
 
 const Projects = ({ t, onEnter, onLeave }) => {
