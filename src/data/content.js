@@ -81,7 +81,7 @@ export const content = {
           desc: "A simple todo list application to help manage and track daily tasks efficiently.",
           tags: ["Flutter", "Mobile App"],
           image: "/src/assets/gambar-Flutter.jpeg",
-          demo: "#",
+          demo: "",
           github: "https://github.com/niookeyy/NioNotes.git",
         }
       ],
