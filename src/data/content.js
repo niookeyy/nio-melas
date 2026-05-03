@@ -80,7 +80,7 @@ export const content = {
           title: "Simple Todo List App",
           desc: "A simple todo list application to help manage and track daily tasks efficiently.",
           tags: ["Flutter", "Mobile App"],
-          image: "/src/assets/gambar-Flutter.jpeg",
+          image: "gambar-Flutter.png",
           demo: "",
           github: "https://github.com/niookeyy/NioNotes.git",
         }
